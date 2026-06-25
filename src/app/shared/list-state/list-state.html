@@ -1,0 +1,19 @@
+@if (loading()) {
+  <div class="card">
+    @for (row of skeletonArray(); track row) {
+      <div class="sk sk-row"></div>
+    }
+  </div>
+} @else if (error()) {
+  <div class="state state--error">
+    <h3>{{ errorTitle() }}</h3>
+    <p>{{ errorText() }}</p>
+  </div>
+} @else if (empty()) {
+  <div class="state">
+    <h3>{{ emptyTitle() }}</h3>
+    <p>{{ emptyText() }}</p>
+  </div>
+} @else {
+  <ng-content />
+}

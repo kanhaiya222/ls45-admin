@@ -1,0 +1,88 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">{{ heading() }}</h1>
+    <p class="page__sub">Posts are created as drafts — publish them from the list.</p>
+  </div>
+  <a class="btn-outline" routerLink="/content/blog">Back to blog</a>
+</header>
+
+@if (loading()) {
+  <div class="form-card"><p class="muted">Loading post…</p></div>
+} @else if (loadError()) {
+  <div class="state state--error">
+    <h3>Couldn't load post</h3>
+    <a class="btn-primary" routerLink="/content/blog">Back to blog</a>
+  </div>
+} @else {
+  @if (saveError()) {
+    <div class="form-error" role="alert">{{ saveError() }}</div>
+  }
+  <form class="form-card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <label class="field">
+      <span class="field__label">Title</span>
+      <input type="text" formControlName="title" />
+      @if (form.controls.title.touched && form.controls.title.invalid) {
+        <span class="field__err">Title is required.</span>
+      }
+    </label>
+
+    <div class="row">
+      <label class="field">
+        <span class="field__label">Slug <span class="field__opt">(auto if blank)</span></span>
+        <input type="text" formControlName="slug" />
+      </label>
+      <label class="field">
+        <span class="field__label">Category <span class="field__opt">(optional)</span></span>
+        <select formControlName="categoryPublicId">
+          <option value="">No category</option>
+          @for (c of categories(); track c.publicId) {
+            <option [value]="c.publicId">{{ c.name }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    <div class="row">
+      <label class="field">
+        <span class="field__label">Author <span class="field__opt">(optional)</span></span>
+        <input type="text" formControlName="authorName" />
+      </label>
+      <label class="field">
+        <span class="field__label">Hero image URL <span class="field__opt">(optional)</span></span>
+        <input type="text" formControlName="heroImageUrl" />
+      </label>
+    </div>
+
+    <label class="field">
+      <span class="field__label">Excerpt <span class="field__opt">(≤ 500)</span></span>
+      <textarea formControlName="excerpt" rows="2"></textarea>
+    </label>
+
+    <label class="field">
+      <span class="field__label">Body <span class="field__opt">(HTML)</span></span>
+      <textarea formControlName="body" rows="12"></textarea>
+    </label>
+
+    <label class="field">
+      <span class="field__label">Meta title <span class="field__opt">(≤ 255)</span></span>
+      <input type="text" formControlName="metaTitle" />
+    </label>
+
+    <label class="field">
+      <span class="field__label">Meta description <span class="field__opt">(≤ 500)</span></span>
+      <textarea formControlName="metaDescription" rows="2"></textarea>
+    </label>
+
+    <label class="field">
+      <span class="field__label">Canonical URL <span class="field__opt">(optional)</span></span>
+      <input type="text" formControlName="canonicalUrl" />
+    </label>
+
+    <div class="form-actions">
+      <a class="btn-outline" routerLink="/content/blog">Cancel</a>
+      <button class="btn-primary" type="submit" [disabled]="saving()">
+        {{ saving() ? 'Saving…' : (isEdit ? 'Save changes' : 'Create post') }}
+      </button>
+    </div>
+  </form>
+}

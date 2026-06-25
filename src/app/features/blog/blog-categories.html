@@ -1,0 +1,41 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">Blog categories</h1>
+    <p class="page__sub">Group blog posts by topic.</p>
+  </div>
+  <a class="btn-outline" routerLink="/content/blog">Back to blog</a>
+</header>
+
+<div class="panel">
+  <form class="add" [formGroup]="form" (ngSubmit)="add()" novalidate>
+    @if (error()) {
+      <div class="add__error" role="alert">{{ error() }}</div>
+    }
+    <div class="add__row">
+      <input type="text" formControlName="name" placeholder="Name" />
+      <input type="text" formControlName="slug" placeholder="Slug (optional)" />
+    </div>
+    <input type="text" formControlName="description" placeholder="Description (optional)" />
+    <button class="btn-primary" type="submit" [disabled]="saving()">
+      {{ saving() ? 'Adding…' : 'Add category' }}
+    </button>
+  </form>
+
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else if (categories().length === 0) {
+    <p class="muted">No blog categories yet.</p>
+  } @else {
+    <ul class="list">
+      @for (c of categories(); track c.publicId) {
+        <li class="list__item">
+          <div>
+            <span class="list__name">{{ c.name }}</span>
+            <span class="list__meta">/{{ c.slug }}</span>
+          </div>
+          <button class="del" type="button" (click)="remove(c)">Remove</button>
+        </li>
+      }
+    </ul>
+  }
+</div>

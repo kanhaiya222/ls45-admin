@@ -1,0 +1,87 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">Departure manifest</h1>
+    <p class="page__sub">Passenger list and waitlist for this departure batch.</p>
+  </div>
+  <a class="btn-outline" routerLink="/packages">Back to packages</a>
+</header>
+
+@if (loading()) {
+  <div class="card"><p class="muted pad">Loading manifest…</p></div>
+} @else if (errored()) {
+  <div class="state state--error">
+    <h3>Couldn't load manifest</h3>
+    <p>Please ensure the API is running, then refresh.</p>
+  </div>
+} @else {
+  <h2 class="section">Passengers ({{ passengers().length }})</h2>
+  @if (passengers().length === 0) {
+    <div class="state"><p>No confirmed passengers on this departure yet.</p></div>
+  } @else {
+    <div class="card">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Traveller</th><th>Booking</th><th>Contact</th><th>DOB</th>
+            <th>Nationality</th><th>Passport</th><th>Dietary</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of passengers(); track p.travellerPublicId) {
+            <tr>
+              <td>
+                <span class="name">{{ p.firstName }} {{ p.lastName }}</span>
+                @if (p.lead) { <span class="tag">Lead</span> }
+              </td>
+              <td class="mono">{{ p.bookingReference || '—' }}</td>
+              <td>
+                <div>{{ p.email || '—' }}</div>
+                <div class="sub">{{ p.phone || '' }}</div>
+              </td>
+              <td>{{ p.dateOfBirth ? (p.dateOfBirth | date: 'mediumDate') : '—' }}</td>
+              <td>{{ p.nationality || '—' }}</td>
+              <td>
+                {{ p.passportNumber || '—' }}
+                @if (p.passportExpiry) {
+                  <span class="sub">exp {{ p.passportExpiry | date: 'mediumDate' }}</span>
+                }
+              </td>
+              <td>{{ p.dietaryPreferences || '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <div class="wl-head">
+    <h2 class="section">Waitlist ({{ waitlist().length }})</h2>
+    @if (waitlist().length) {
+      <button class="btn-outline" type="button" [disabled]="notifying() || notified()" (click)="notifyWaitlist()">
+        {{ notified() ? 'Notified' : (notifying() ? 'Notifying…' : 'Notify waitlist') }}
+      </button>
+    }
+  </div>
+  @if (waitlist().length === 0) {
+    <div class="state"><p>No one is waiting for this departure.</p></div>
+  } @else {
+    <div class="card">
+      <table class="tbl">
+        <thead>
+          <tr><th>Occupancy</th><th>Travellers</th><th>Status</th><th>Joined</th><th>Notified</th></tr>
+        </thead>
+        <tbody>
+          @for (w of waitlist(); track w.publicId) {
+            <tr>
+              <td>{{ w.occupancyType }}</td>
+              <td>{{ w.numTravellers }}</td>
+              <td><span class="status">{{ w.status }}</span></td>
+              <td>{{ w.createdAt | date: 'mediumDate' }}</td>
+              <td>{{ w.notifiedAt ? (w.notifiedAt | date: 'medium') : '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}

@@ -1,0 +1,123 @@
+<header class="page__head">
+  <h1 class="page__title">Bookings</h1>
+  <p class="page__sub">All bookings, payment status and cancellations.</p>
+</header>
+
+@if (loading()) {
+  <div class="card">
+    @for (s of [0, 1, 2, 3, 4]; track s) {
+      <div class="sk sk-row"></div>
+    }
+  </div>
+} @else if (errored()) {
+  <div class="state state--error">
+    <h3>Couldn't load bookings</h3>
+    <p>Please ensure the API is running, then refresh.</p>
+  </div>
+} @else if (items().length === 0) {
+  <div class="state">
+    <h3>No bookings yet</h3>
+    <p>Bookings will appear here as customers reserve departures.</p>
+  </div>
+} @else {
+  <div class="card">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Reference</th>
+          <th>Status</th>
+          <th>Occupancy</th>
+          <th>Travellers</th>
+          <th>Total</th>
+          <th>Booked</th>
+          <th class="tbl__actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (b of items(); track b.publicId) {
+          <tr>
+            <td class="tbl__ref">{{ b.bookingReference }}</td>
+            <td><span class="status" [class]="statusClass(b.status)">{{ label(b.status) }}</span></td>
+            <td>{{ label(b.occupancyType) }}</td>
+            <td>{{ b.numTravellers }}</td>
+            <td>₹{{ b.totalPrice | number: '1.0-0' }}</td>
+            <td>{{ b.createdAt | date: 'mediumDate' }}</td>
+            <td class="tbl__actions">
+              <button class="btn-mini" type="button" (click)="togglePayments(b)">
+                {{ expandedId() === b.publicId ? 'Hide' : 'Payments' }}
+              </button>
+              @if (b.status !== 'CANCELLED') {
+                <button class="btn-mini btn-mini--bad" type="button" (click)="startCancel(b)">Cancel</button>
+              }
+            </td>
+          </tr>
+
+          @if (expandedId() === b.publicId) {
+            <tr class="row-expand">
+              <td colspan="7">
+                @if (loadingPaymentsId() === b.publicId) {
+                  <p class="muted">Loading payments…</p>
+                } @else if (paymentsFor(b.publicId).length === 0) {
+                  <p class="muted">No payments recorded for this booking.</p>
+                } @else {
+                  <table class="subtbl">
+                    <thead>
+                      <tr><th>Amount</th><th>Status</th><th>Method</th><th>Reference</th><th>Date</th></tr>
+                    </thead>
+                    <tbody>
+                      @for (p of paymentsFor(b.publicId); track p.publicId) {
+                        <tr>
+                          <td>₹{{ p.amount | number: '1.0-0' }}</td>
+                          <td><span class="status" [class]="statusClass(p.status)">{{ label(p.status) }}</span></td>
+                          <td>{{ p.gateway || '—' }}</td>
+                          <td class="mono">{{ p.gatewayReference || '—' }}</td>
+                          <td>{{ (p.capturedAt || p.createdAt) | date: 'medium' }}</td>
+                        </tr>
+                        @if (p.refundAmount) {
+                          <tr class="refund">
+                            <td>−₹{{ p.refundAmount | number: '1.0-0' }}</td>
+                            <td>Refunded</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>{{ p.refundedAt | date: 'medium' }}</td>
+                          </tr>
+                        }
+                      }
+                    </tbody>
+                  </table>
+                }
+              </td>
+            </tr>
+          }
+
+          @if (cancelingId() === b.publicId) {
+            <tr class="row-expand">
+              <td colspan="7">
+                <form class="cancel" [formGroup]="cancelForm" (ngSubmit)="confirmCancel(b)">
+                  <span class="field__label">Cancel booking {{ b.bookingReference }}</span>
+                  <textarea
+                    formControlName="reason"
+                    rows="2"
+                    placeholder="Reason (optional — shown in records and refund handling)"
+                  ></textarea>
+                  <div class="cancel__actions">
+                    <button class="btn-mini" type="button" (click)="startCancel(b)">Dismiss</button>
+                    <button class="btn-mini btn-mini--bad" type="submit" [disabled]="cancelling()">
+                      {{ cancelling() ? 'Cancelling…' : 'Confirm cancellation' }}
+                    </button>
+                  </div>
+                </form>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (!last()) {
+    <button class="btn-outline tbl__more" type="button" [disabled]="loadingMore()" (click)="loadMore()">
+      {{ loadingMore() ? 'Loading…' : 'Load more' }}
+    </button>
+  }
+}

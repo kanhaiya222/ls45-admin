@@ -1,0 +1,73 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">Content pages</h1>
+    <p class="page__sub">Managed pages such as About, Terms and Privacy.</p>
+  </div>
+  <a class="btn-primary" routerLink="/content/pages/new">+ New page</a>
+</header>
+
+<div class="tabs">
+  @for (s of statuses; track s) {
+    <button type="button" class="tab" [class.is-active]="activeStatus() === s" (click)="selectStatus(s)">
+      {{ s === 'ALL' ? 'All' : (s.charAt(0) + s.slice(1).toLowerCase()) }}
+    </button>
+  }
+</div>
+
+@if (loading()) {
+  <div class="card">
+    @for (s of [0, 1, 2, 3]; track s) {
+      <div class="sk sk-row"></div>
+    }
+  </div>
+} @else if (errored()) {
+  <div class="state state--error">
+    <h3>Couldn't load pages</h3>
+    <p>Please ensure the API is running, then refresh.</p>
+  </div>
+} @else if (items().length === 0) {
+  <div class="state">
+    <h3>No pages here</h3>
+    <p>Create a page to publish content like About or Terms.</p>
+  </div>
+} @else {
+  <div class="card">
+    <table class="tbl">
+      <thead>
+        <tr><th>Title</th><th>Slug</th><th>Status</th><th>Updated</th><th class="tbl__actions">Actions</th></tr>
+      </thead>
+      <tbody>
+        @for (p of items(); track p.publicId) {
+          <tr>
+            <td class="tbl__title">{{ p.title }}</td>
+            <td class="mono">/{{ p.slug }}</td>
+            <td><span class="status" [class]="statusClass(p.status)">{{ p.status }}</span></td>
+            <td>{{ p.updatedAt | date: 'mediumDate' }}</td>
+            <td class="tbl__actions">
+              <a class="btn-mini" [routerLink]="['/content/pages', p.publicId, 'edit']">Edit</a>
+              @if (p.status !== 'PUBLISHED') {
+                <button class="btn-mini btn-mini--go" type="button" [disabled]="actingId() === p.publicId" (click)="publish(p)">
+                  Publish
+                </button>
+              }
+              @if (p.status === 'PUBLISHED') {
+                <button class="btn-mini" type="button" [disabled]="actingId() === p.publicId" (click)="archive(p)">
+                  Archive
+                </button>
+              }
+              <button class="btn-mini btn-mini--bad" type="button" [disabled]="actingId() === p.publicId" (click)="remove(p)">
+                Delete
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (!last()) {
+    <button class="btn-outline tbl__more" type="button" [disabled]="loadingMore()" (click)="loadMore()">
+      {{ loadingMore() ? 'Loading…' : 'Load more' }}
+    </button>
+  }
+}

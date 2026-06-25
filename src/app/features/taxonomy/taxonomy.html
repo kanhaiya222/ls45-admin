@@ -1,0 +1,94 @@
+<header class="page__head">
+  <h1 class="page__title">Taxonomy</h1>
+  <p class="page__sub">Categories and tags used to organise and filter packages.</p>
+</header>
+
+<div class="cols">
+  <section class="col">
+    <h2 class="col__title">Categories</h2>
+
+    <form class="add" [formGroup]="catForm" (ngSubmit)="addCategory()" novalidate>
+      @if (catError()) {
+        <div class="add__error" role="alert">{{ catError() }}</div>
+      }
+      <div class="add__row">
+        <input type="text" formControlName="name" placeholder="Name" />
+        <input type="text" formControlName="slug" placeholder="Slug (optional)" />
+      </div>
+      <input type="text" formControlName="description" placeholder="Description (optional)" />
+      <div class="add__row">
+        <select formControlName="parentPublicId">
+          <option value="">No parent</option>
+          @for (c of categories(); track c.publicId) {
+            <option [value]="c.publicId">{{ c.name }}</option>
+          }
+        </select>
+        <input type="text" formControlName="iconCode" placeholder="Icon code (optional)" />
+        <input type="number" formControlName="sortOrder" placeholder="Sort" />
+      </div>
+      <button class="btn-primary" type="submit" [disabled]="savingCat()">
+        {{ savingCat() ? 'Adding…' : 'Add category' }}
+      </button>
+    </form>
+
+    @if (loadingCats()) {
+      <p class="muted">Loading…</p>
+    } @else if (categories().length === 0) {
+      <p class="muted">No categories yet.</p>
+    } @else {
+      <ul class="list">
+        @for (c of categories(); track c.publicId) {
+          <li class="list__item">
+            <div>
+              <span class="list__name">{{ c.name }}</span>
+              <span class="list__meta">{{ c.packageCount }} packages</span>
+            </div>
+            <button class="del" type="button" (click)="deleteCategory(c)">Remove</button>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="col">
+    <h2 class="col__title">Tags</h2>
+
+    <form class="add" [formGroup]="tagForm" (ngSubmit)="addTag()" novalidate>
+      @if (tagError()) {
+        <div class="add__error" role="alert">{{ tagError() }}</div>
+      }
+      <div class="add__row">
+        <input type="text" formControlName="name" placeholder="Name" />
+        <select formControlName="type">
+          @for (t of tagTypes; track t) {
+            <option [value]="t">{{ t }}</option>
+          }
+        </select>
+      </div>
+      <input type="text" formControlName="slug" placeholder="Slug (optional)" />
+      <button class="btn-primary" type="submit" [disabled]="savingTag()">
+        {{ savingTag() ? 'Adding…' : 'Add tag' }}
+      </button>
+    </form>
+
+    @if (loadingTags()) {
+      <p class="muted">Loading…</p>
+    } @else if (tags().length === 0) {
+      <p class="muted">No tags yet.</p>
+    } @else {
+      <ul class="list">
+        @for (t of tags(); track t.publicId) {
+          <li class="list__item">
+            <div>
+              <span class="list__name">{{ t.name }}</span>
+              @if (t.type) {
+                <span class="chip">{{ t.type }}</span>
+              }
+            </div>
+            <button class="del" type="button" (click)="deleteTag(t)">Remove</button>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</div>

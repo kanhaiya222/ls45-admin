@@ -1,0 +1,101 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">Package content</h1>
+    <p class="page__sub">{{ packageName() || 'FAQs and media for this package.' }}</p>
+  </div>
+  <a class="btn-outline" routerLink="/packages">Back to packages</a>
+</header>
+
+<div class="cols">
+  <section class="col">
+    <h2 class="col__title">FAQs</h2>
+
+    <form class="add" [formGroup]="faqForm" (ngSubmit)="addFaq()" novalidate>
+      @if (faqError()) {
+        <div class="add__error" role="alert">{{ faqError() }}</div>
+      }
+      <input type="text" formControlName="question" placeholder="Question" />
+      <textarea formControlName="answer" rows="3" placeholder="Answer"></textarea>
+      <div class="add__row">
+        <label class="inline">
+          <input type="checkbox" formControlName="published" /> <span>Published</span>
+        </label>
+        <input type="number" formControlName="sortOrder" placeholder="Sort" />
+        <button class="btn-primary" type="submit" [disabled]="savingFaq()">
+          {{ savingFaq() ? 'Adding…' : 'Add FAQ' }}
+        </button>
+      </div>
+    </form>
+
+    @if (loadingFaqs()) {
+      <p class="muted">Loading…</p>
+    } @else if (faqs().length === 0) {
+      <p class="muted">No FAQs yet.</p>
+    } @else {
+      <ul class="list">
+        @for (f of faqs(); track f.publicId) {
+          <li class="list__item list__item--col">
+            <div class="faq">
+              <div class="faq__q">
+                {{ f.question }}
+                @if (f.published === false) { <span class="chip chip--muted">Hidden</span> }
+              </div>
+              <div class="faq__a">{{ f.answer }}</div>
+            </div>
+            <button class="del" type="button" (click)="deleteFaq(f)">Remove</button>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="col">
+    <h2 class="col__title">Media</h2>
+
+    <form class="add" [formGroup]="mediaForm" (ngSubmit)="addMedia()" novalidate>
+      @if (mediaError()) {
+        <div class="add__error" role="alert">{{ mediaError() }}</div>
+      }
+      <input type="text" formControlName="url" placeholder="Image / video URL" />
+      <input type="text" formControlName="altText" placeholder="Alt text (optional)" />
+      <div class="add__row">
+        <select formControlName="mediaType">
+          @for (t of mediaTypes; track t) {
+            <option [value]="t">{{ t }}</option>
+          }
+        </select>
+        <label class="inline">
+          <input type="checkbox" formControlName="primary" /> <span>Primary</span>
+        </label>
+        <input type="number" formControlName="sortOrder" placeholder="Sort" />
+        <button class="btn-primary" type="submit" [disabled]="savingMedia()">
+          {{ savingMedia() ? 'Adding…' : 'Add' }}
+        </button>
+      </div>
+    </form>
+
+    @if (loadingMedia()) {
+      <p class="muted">Loading…</p>
+    } @else if (media().length === 0) {
+      <p class="muted">No media yet.</p>
+    } @else {
+      <ul class="list">
+        @for (m of media(); track m.publicId) {
+          <li class="list__item">
+            @if (m.mediaType !== 'VIDEO') {
+              <img class="thumb" [src]="m.url" [alt]="m.altText || ''" loading="lazy" />
+            } @else {
+              <span class="thumb thumb--video">▶</span>
+            }
+            <div class="media__body">
+              <span class="media__url">{{ m.url }}</span>
+              @if (m.primary) { <span class="chip">Primary</span> }
+              @if (m.altText) { <span class="media__alt">{{ m.altText }}</span> }
+            </div>
+            <button class="del" type="button" (click)="deleteMedia(m)">Remove</button>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</div>

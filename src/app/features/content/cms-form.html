@@ -1,0 +1,61 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">{{ heading() }}</h1>
+    <p class="page__sub">Pages are created as drafts — publish them from the list.</p>
+  </div>
+  <a class="btn-outline" routerLink="/content/pages">Back to pages</a>
+</header>
+
+@if (loading()) {
+  <div class="form-card"><p class="muted">Loading page…</p></div>
+} @else if (loadError()) {
+  <div class="state state--error">
+    <h3>Couldn't load page</h3>
+    <a class="btn-primary" routerLink="/content/pages">Back to pages</a>
+  </div>
+} @else {
+  @if (saveError()) {
+    <div class="form-error" role="alert">{{ saveError() }}</div>
+  }
+  <form class="form-card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <label class="field">
+      <span class="field__label">Title</span>
+      <input type="text" formControlName="title" />
+      @if (form.controls.title.touched && form.controls.title.invalid) {
+        <span class="field__err">Title is required.</span>
+      }
+    </label>
+
+    <label class="field">
+      <span class="field__label">Slug <span class="field__opt">(auto if blank)</span></span>
+      <input type="text" formControlName="slug" placeholder="about" />
+    </label>
+
+    <label class="field">
+      <span class="field__label">Body <span class="field__opt">(HTML)</span></span>
+      <textarea formControlName="body" rows="12"></textarea>
+    </label>
+
+    <label class="field">
+      <span class="field__label">Meta title <span class="field__opt">(≤ 255)</span></span>
+      <input type="text" formControlName="metaTitle" />
+    </label>
+
+    <label class="field">
+      <span class="field__label">Meta description <span class="field__opt">(≤ 500)</span></span>
+      <textarea formControlName="metaDescription" rows="2"></textarea>
+    </label>
+
+    <label class="field">
+      <span class="field__label">Canonical URL <span class="field__opt">(optional)</span></span>
+      <input type="text" formControlName="canonicalUrl" />
+    </label>
+
+    <div class="form-actions">
+      <a class="btn-outline" routerLink="/content/pages">Cancel</a>
+      <button class="btn-primary" type="submit" [disabled]="saving()">
+        {{ saving() ? 'Saving…' : (isEdit ? 'Save changes' : 'Create page') }}
+      </button>
+    </div>
+  </form>
+}

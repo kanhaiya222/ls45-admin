@@ -1,0 +1,117 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">Reports</h1>
+    <p class="page__sub">Revenue, payments and customer activity over a period.</p>
+  </div>
+  <form class="range" [formGroup]="range" (ngSubmit)="apply()">
+    <label class="range__field">
+      <span>From</span>
+      <input type="date" formControlName="from" />
+    </label>
+    <label class="range__field">
+      <span>To</span>
+      <input type="date" formControlName="to" />
+    </label>
+    <button class="btn-primary" type="submit" [disabled]="loading()">Apply</button>
+  </form>
+</header>
+
+@if (loading()) {
+  <div class="stat-grid">
+    @for (s of [0, 1, 2, 3]; track s) {
+      <div class="stat stat--skeleton"><div class="sk sk-num"></div><div class="sk sk-label"></div></div>
+    }
+  </div>
+} @else if (errored()) {
+  <div class="state state--error">
+    <h3>Couldn't load reports</h3>
+    <p>Please ensure the API is running, then refresh.</p>
+  </div>
+} @else {
+  @if (revenue(); as r) {
+    <h2 class="section">Revenue</h2>
+    <div class="stat-grid">
+      <article class="stat stat--good">
+        <span class="stat__num">₹{{ r.netRevenue }}</span><span class="stat__label">Net revenue</span>
+      </article>
+      <article class="stat">
+        <span class="stat__num">₹{{ r.grossRevenue }}</span><span class="stat__label">Gross revenue</span>
+      </article>
+      <article class="stat">
+        <span class="stat__num">₹{{ r.taxCollected }}</span><span class="stat__label">Tax collected</span>
+      </article>
+      <article class="stat stat--bad">
+        <span class="stat__num">₹{{ r.totalRefunds }}</span><span class="stat__label">Refunds</span>
+      </article>
+      <article class="stat">
+        <span class="stat__num">{{ r.confirmedBookingCount }}</span>
+        <span class="stat__label">Confirmed bookings</span>
+      </article>
+    </div>
+  }
+
+  <h2 class="section">Customers</h2>
+  <div class="stat-grid">
+    @if (registrations(); as reg) {
+      <article class="stat">
+        <span class="stat__num">{{ reg.totalCustomers }}</span><span class="stat__label">Total customers</span>
+      </article>
+      <article class="stat stat--good">
+        <span class="stat__num">{{ reg.newRegistrations }}</span>
+        <span class="stat__label">New sign-ups</span>
+      </article>
+    }
+    @if (activity(); as act) {
+      <article class="stat">
+        <span class="stat__num">{{ act.activeCustomers }}</span>
+        <span class="stat__label">Active (booked)</span>
+      </article>
+      <article class="stat">
+        <span class="stat__num">{{ act.repeatCustomers }}</span>
+        <span class="stat__label">Repeat customers</span>
+      </article>
+    }
+  </div>
+
+  @if (payments(); as pay) {
+    <h2 class="section">Payments</h2>
+    <div class="card">
+      <div class="card__head">
+        <span>{{ pay.totalTransactions }} transactions</span>
+        <span class="card__total">₹{{ pay.totalAmount }}</span>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>Status</th><th>Count</th><th>Amount</th></tr></thead>
+        <tbody>
+          @for (s of pay.byStatus; track s.status) {
+            <tr><td>{{ s.status }}</td><td>{{ s.count }}</td><td>₹{{ s.amount }}</td></tr>
+          } @empty {
+            <tr><td colspan="3" class="muted">No payments in this period.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <h2 class="section">Package performance</h2>
+  <div class="card">
+    <table class="tbl">
+      <thead>
+        <tr><th>Package</th><th>Total</th><th>Confirmed</th><th>Cancelled</th><th>Revenue</th></tr>
+      </thead>
+      <tbody>
+        @for (p of performance(); track p.packagePublicId) {
+          <tr>
+            <td>{{ p.packageName || p.packagePublicId }}</td>
+            <td>{{ p.totalBookings }}</td>
+            <td>{{ p.confirmedBookings }}</td>
+            <td>{{ p.cancelledBookings }}</td>
+            <td>₹{{ p.confirmedRevenue }}</td>
+          </tr>
+        } @empty {
+          <tr><td colspan="5" class="muted">No bookings in this period.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

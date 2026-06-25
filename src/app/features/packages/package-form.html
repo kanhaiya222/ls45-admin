@@ -1,0 +1,168 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">{{ heading() }}</h1>
+    <p class="page__sub">Define a wellness journey. It is created as a draft — publish it from the list.</p>
+  </div>
+  <a class="btn-outline" routerLink="/packages">Back to packages</a>
+</header>
+
+@if (loading()) {
+  <div class="form-card"><p class="muted">Loading package…</p></div>
+} @else if (loadError()) {
+  <div class="state state--error">
+    <h3>Couldn't load package</h3>
+    <a class="btn-primary" routerLink="/packages">Back to packages</a>
+  </div>
+} @else {
+  @if (saveError()) {
+    <div class="form-error" role="alert">{{ saveError() }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <section class="form-card">
+      <h2 class="section__title">Basics</h2>
+      <div class="grid">
+        <label class="field field--wide">
+          <span class="field__label">Name</span>
+          <input type="text" formControlName="name" />
+          @if (form.controls.name.touched && form.controls.name.invalid) {
+            <span class="field__err">Name is required.</span>
+          }
+        </label>
+        <label class="field">
+          <span class="field__label">Slug <span class="field__opt">(auto if blank)</span></span>
+          <input type="text" formControlName="slug" placeholder="himalayan-yoga-retreat" />
+        </label>
+        <label class="field">
+          <span class="field__label">Category</span>
+          <select formControlName="categoryPublicId">
+            <option value="">Select a category…</option>
+            @for (c of categories(); track c.publicId) {
+              <option [value]="c.publicId">{{ c.name }}</option>
+            }
+          </select>
+          @if (form.controls.categoryPublicId.touched && form.controls.categoryPublicId.invalid) {
+            <span class="field__err">Category is required.</span>
+          }
+        </label>
+        <label class="field">
+          <span class="field__label">Difficulty</span>
+          <select formControlName="difficulty">
+            @for (d of difficulties; track d) {
+              <option [value]="d">{{ d.charAt(0) + d.slice(1).toLowerCase() }}</option>
+            }
+          </select>
+        </label>
+        <label class="field field--check">
+          <input type="checkbox" formControlName="featured" />
+          <span>Featured</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="form-card">
+      <h2 class="section__title">Pricing &amp; duration</h2>
+      <div class="grid">
+        <label class="field">
+          <span class="field__label">Base price (₹)</span>
+          <input type="number" formControlName="basePrice" min="0" />
+          @if (form.controls.basePrice.touched && form.controls.basePrice.invalid) {
+            <span class="field__err">A non-negative price is required.</span>
+          }
+        </label>
+        <label class="field">
+          <span class="field__label">Duration (days)</span>
+          <input type="number" formControlName="durationDays" min="1" />
+          @if (form.controls.durationDays.touched && form.controls.durationDays.invalid) {
+            <span class="field__err">At least 1 day.</span>
+          }
+        </label>
+        <label class="field">
+          <span class="field__label">Duration (nights)</span>
+          <input type="number" formControlName="durationNights" min="0" />
+        </label>
+        <label class="field">
+          <span class="field__label">Min group size</span>
+          <input type="number" formControlName="minGroupSize" min="1" />
+        </label>
+        <label class="field">
+          <span class="field__label">Max group size</span>
+          <input type="number" formControlName="maxGroupSize" min="1" />
+        </label>
+      </div>
+    </section>
+
+    <section class="form-card">
+      <h2 class="section__title">Details</h2>
+      <div class="grid">
+        <label class="field field--wide">
+          <span class="field__label">Short description <span class="field__opt">(≤ 500)</span></span>
+          <textarea formControlName="shortDescription" rows="2"></textarea>
+        </label>
+        <label class="field field--wide">
+          <span class="field__label">Description</span>
+          <textarea formControlName="description" rows="5"></textarea>
+        </label>
+        <label class="field">
+          <span class="field__label">Meeting location</span>
+          <input type="text" formControlName="meetingLocation" />
+        </label>
+        <label class="field">
+          <span class="field__label">End location</span>
+          <input type="text" formControlName="endLocation" />
+        </label>
+        <label class="field field--wide">
+          <span class="field__label">Highlights <span class="field__opt">(one per line)</span></span>
+          <textarea formControlName="highlights" rows="4"></textarea>
+        </label>
+        <label class="field field--wide">
+          <span class="field__label">Inclusions <span class="field__opt">(one per line)</span></span>
+          <textarea formControlName="inclusions" rows="4"></textarea>
+        </label>
+        <label class="field field--wide">
+          <span class="field__label">Exclusions <span class="field__opt">(one per line)</span></span>
+          <textarea formControlName="exclusions" rows="4"></textarea>
+        </label>
+      </div>
+
+      @if (tags().length) {
+        <div class="tags">
+          <span class="field__label">Tags</span>
+          <div class="tags__chips">
+            @for (t of tags(); track t.publicId) {
+              <button
+                type="button"
+                class="tagchip"
+                [class.is-selected]="isTagSelected(t.publicId)"
+                (click)="toggleTag(t.publicId)"
+              >
+                {{ t.name }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </section>
+
+    <section class="form-card">
+      <h2 class="section__title">SEO</h2>
+      <div class="grid">
+        <label class="field field--wide">
+          <span class="field__label">Meta title <span class="field__opt">(≤ 255)</span></span>
+          <input type="text" formControlName="metaTitle" />
+        </label>
+        <label class="field field--wide">
+          <span class="field__label">Meta description <span class="field__opt">(≤ 500)</span></span>
+          <textarea formControlName="metaDescription" rows="2"></textarea>
+        </label>
+      </div>
+    </section>
+
+    <div class="form-actions">
+      <a class="btn-outline" routerLink="/packages">Cancel</a>
+      <button class="btn-primary" type="submit" [disabled]="saving()">
+        {{ saving() ? 'Saving…' : (isEdit ? 'Save changes' : 'Create package') }}
+      </button>
+    </div>
+  </form>
+}

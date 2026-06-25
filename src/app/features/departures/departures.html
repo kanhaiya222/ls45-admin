@@ -1,0 +1,145 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">Departures</h1>
+    <p class="page__sub">
+      @if (packageName()) {
+        {{ packageName() }}
+      } @else {
+        Manage fixed-departure batches for this package.
+      }
+    </p>
+  </div>
+  <div class="page__actions">
+    <a class="btn-outline" routerLink="/packages">Back to packages</a>
+    <button class="btn-primary" type="button" (click)="toggleForm()">
+      {{ showForm() ? 'Close' : '+ New departure' }}
+    </button>
+  </div>
+</header>
+
+@if (showForm()) {
+  <form class="form-card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    @if (saveError()) {
+      <div class="form-error" role="alert">{{ saveError() }}</div>
+    }
+    <div class="grid">
+      <label class="field">
+        <span class="field__label">Start date</span>
+        <input type="date" formControlName="startDate" />
+        @if (form.controls.startDate.touched && form.controls.startDate.invalid) {
+          <span class="field__err">Required.</span>
+        }
+      </label>
+      <label class="field">
+        <span class="field__label">End date</span>
+        <input type="date" formControlName="endDate" />
+        @if (form.controls.endDate.touched && form.controls.endDate.invalid) {
+          <span class="field__err">Required.</span>
+        }
+      </label>
+      <label class="field">
+        <span class="field__label">Booking cut-off</span>
+        <input type="date" formControlName="bookingCutoffDate" />
+        @if (form.controls.bookingCutoffDate.touched && form.controls.bookingCutoffDate.invalid) {
+          <span class="field__err">Required.</span>
+        }
+      </label>
+      <label class="field">
+        <span class="field__label">Total capacity</span>
+        <input type="number" formControlName="totalCapacity" min="1" />
+      </label>
+      <label class="field field--wide">
+        <span class="field__label">Special notes <span class="field__opt">(optional)</span></span>
+        <input type="text" formControlName="specialNotes" />
+      </label>
+    </div>
+
+    <div class="pricing">
+      <span class="field__label">Per-person pricing <span class="field__opt">(leave 0 if not offered)</span></span>
+      <div class="pricing__grid">
+        @for (pf of priceFields; track pf.control) {
+          <label class="field">
+            <span class="field__label">{{ pf.label }} (₹)</span>
+            <input type="number" [formControlName]="pf.control" min="0" />
+          </label>
+        }
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-primary" type="submit" [disabled]="saving()">
+        {{ saving() ? 'Saving…' : 'Create departure' }}
+      </button>
+    </div>
+  </form>
+}
+
+@if (loading()) {
+  <div class="card">
+    @for (s of [0, 1, 2]; track s) {
+      <div class="sk sk-row"></div>
+    }
+  </div>
+} @else if (errored()) {
+  <div class="state state--error">
+    <h3>Couldn't load departures</h3>
+    <p>Please ensure the API is running, then refresh.</p>
+  </div>
+} @else if (items().length === 0) {
+  <div class="state">
+    <h3>No departures yet</h3>
+    <p>Add a departure batch so customers can book this package.</p>
+  </div>
+} @else {
+  <div class="card">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Dates</th>
+          <th>Cut-off</th>
+          <th>Capacity</th>
+          <th>Seats left</th>
+          <th>Pricing (from)</th>
+          <th>Status</th>
+          <th class="tbl__actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (d of items(); track d.publicId) {
+          <tr>
+            <td>{{ d.startDate }} → {{ d.endDate }}</td>
+            <td>{{ d.bookingCutoffDate || '—' }}</td>
+            <td>{{ d.totalCapacity }}</td>
+            <td>{{ d.availableSeats }}@if (d.soldOut) { <span class="tag">Sold out</span> }</td>
+            <td>
+              @if (d.pricing && d.pricing.length) {
+                ₹{{ d.pricing[0].price }}
+              } @else {
+                —
+              }
+            </td>
+            <td><span class="status" [class]="statusClass(d.status)">{{ statusLabel(d.status) }}</span></td>
+            <td class="tbl__actions">
+              <a class="btn-mini" [routerLink]="['/departures', d.publicId, 'manifest']">Manifest</a>
+              @if (canClose(d.status)) {
+                <button class="btn-mini" type="button" [disabled]="actingId() === d.publicId" (click)="close(d)">
+                  Close
+                </button>
+              }
+              @if (canReopen(d.status)) {
+                <button class="btn-mini btn-mini--go" type="button" [disabled]="actingId() === d.publicId" (click)="reopen(d)">
+                  Reopen
+                </button>
+              }
+              @if (canCancel(d.status)) {
+                <button class="btn-mini btn-mini--bad" type="button" [disabled]="actingId() === d.publicId" (click)="cancel(d)">
+                  Cancel
+                </button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
