@@ -3,23 +3,15 @@
   <p class="page__sub">All bookings, payment status and cancellations.</p>
 </header>
 
-@if (loading()) {
-  <div class="card">
-    @for (s of [0, 1, 2, 3, 4]; track s) {
-      <div class="sk sk-row"></div>
-    }
-  </div>
-} @else if (errored()) {
-  <div class="state state--error">
-    <h3>Couldn't load bookings</h3>
-    <p>Please ensure the API is running, then refresh.</p>
-  </div>
-} @else if (items().length === 0) {
-  <div class="state">
-    <h3>No bookings yet</h3>
-    <p>Bookings will appear here as customers reserve departures.</p>
-  </div>
-} @else {
+<app-list-state
+  [loading]="loading()"
+  [error]="errored()"
+  [empty]="items().length === 0"
+  errorTitle="Couldn't load bookings"
+  emptyTitle="No bookings yet"
+  emptyText="Bookings will appear here as customers reserve departures."
+  [skeletonRows]="5"
+>
   <div class="card">
     <table class="tbl">
       <thead>
@@ -120,4 +112,4 @@
       {{ loadingMore() ? 'Loading…' : 'Load more' }}
     </button>
   }
-}
+</app-list-state>

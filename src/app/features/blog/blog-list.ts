@@ -4,10 +4,11 @@ import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { BlogAdminService } from '../../core/blog-admin.service';
 import { BlogPostListItem } from '../../core/models';
+import { ListStateComponent } from '../../shared/list-state/list-state';
 
 @Component({
   selector: 'app-admin-blog-list',
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, ListStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './blog-list.html',
   styleUrl: './blog-list.scss',

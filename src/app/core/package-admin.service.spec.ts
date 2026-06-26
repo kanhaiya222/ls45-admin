@@ -43,6 +43,7 @@ describe('PackageAdminService', () => {
     service.list('PUBLISHED').subscribe();
 
     const req = http.expectOne((r) => r.url === base && r.params.get('status') === 'PUBLISHED');
+    expect(req.request.method).toBe('GET');
     req.flush(emptyPage);
   });
 

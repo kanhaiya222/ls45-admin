@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DepartureAdminService } from '../../core/departure-admin.service';
 import { PackageAdminService } from '../../core/package-admin.service';
 import { CreateDeparturePayload, DepartureSummary, OccupancyType } from '../../core/models';
+import { ListStateComponent } from '../../shared/list-state/list-state';
 
 interface PriceField {
   control: 'priceSingle' | 'priceDouble' | 'priceTriple' | 'priceQuad';
@@ -13,7 +14,7 @@ interface PriceField {
 
 @Component({
   selector: 'app-admin-departures',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, ListStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './departures.html',
   styleUrl: './departures.scss',

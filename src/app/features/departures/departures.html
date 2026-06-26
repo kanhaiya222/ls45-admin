@@ -74,23 +74,15 @@
   </form>
 }
 
-@if (loading()) {
-  <div class="card">
-    @for (s of [0, 1, 2]; track s) {
-      <div class="sk sk-row"></div>
-    }
-  </div>
-} @else if (errored()) {
-  <div class="state state--error">
-    <h3>Couldn't load departures</h3>
-    <p>Please ensure the API is running, then refresh.</p>
-  </div>
-} @else if (items().length === 0) {
-  <div class="state">
-    <h3>No departures yet</h3>
-    <p>Add a departure batch so customers can book this package.</p>
-  </div>
-} @else {
+<app-list-state
+  [loading]="loading()"
+  [error]="errored()"
+  [empty]="items().length === 0"
+  errorTitle="Couldn't load departures"
+  emptyTitle="No departures yet"
+  emptyText="Add a departure batch so customers can book this package."
+  [skeletonRows]="3"
+>
   <div class="card">
     <table class="tbl">
       <thead>
@@ -142,4 +134,4 @@
       </tbody>
     </table>
   </div>
-}
+</app-list-state>

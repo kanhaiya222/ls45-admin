@@ -3,10 +3,11 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BookingAdminService } from '../../core/booking-admin.service';
 import { Booking, PaymentRecord } from '../../core/models';
+import { ListStateComponent } from '../../shared/list-state/list-state';
 
 @Component({
   selector: 'app-admin-bookings',
-  imports: [DatePipe, DecimalPipe, ReactiveFormsModule],
+  imports: [DatePipe, DecimalPipe, ReactiveFormsModule, ListStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './bookings.html',
   styleUrl: './bookings.scss',

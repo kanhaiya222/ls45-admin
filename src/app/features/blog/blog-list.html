@@ -17,23 +17,15 @@
   }
 </div>
 
-@if (loading()) {
-  <div class="card">
-    @for (s of [0, 1, 2, 3]; track s) {
-      <div class="sk sk-row"></div>
-    }
-  </div>
-} @else if (errored()) {
-  <div class="state state--error">
-    <h3>Couldn't load posts</h3>
-    <p>Please ensure the API is running, then refresh.</p>
-  </div>
-} @else if (items().length === 0) {
-  <div class="state">
-    <h3>No posts here</h3>
-    <p>Write a post to share wellness guides and updates.</p>
-  </div>
-} @else {
+<app-list-state
+  [loading]="loading()"
+  [error]="errored()"
+  [empty]="items().length === 0"
+  errorTitle="Couldn't load posts"
+  emptyTitle="No posts here"
+  emptyText="Write a post to share wellness guides and updates."
+  [skeletonRows]="4"
+>
   <div class="card">
     <table class="tbl">
       <thead>
@@ -78,4 +70,4 @@
       {{ loadingMore() ? 'Loading…' : 'Load more' }}
     </button>
   }
-}
+</app-list-state>

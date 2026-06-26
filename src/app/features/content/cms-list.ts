@@ -4,10 +4,11 @@ import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { CmsAdminService } from '../../core/cms-admin.service';
 import { CmsPageListItem } from '../../core/models';
+import { ListStateComponent } from '../../shared/list-state/list-state';
 
 @Component({
   selector: 'app-admin-cms-list',
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, ListStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './cms-list.html',
   styleUrl: './cms-list.scss',
