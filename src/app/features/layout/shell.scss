@@ -17,6 +17,7 @@
   padding: 5px 9px; border-radius: var(--radius-sm); flex-shrink: 0;
 }
 .sidebar__name { font-family: var(--font-serif); font-size: 17px; color: #fff; }
+.sidebar__logo { height: 30px; width: auto; max-width: 150px; object-fit: contain; display: block; }
 
 .sidebar__nav { display: flex; flex-direction: column; gap: 2px; overflow-y: auto; overflow-x: hidden; }
 .sb-section {

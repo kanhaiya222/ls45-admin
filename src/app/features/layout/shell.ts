@@ -8,6 +8,7 @@ import { ConfirmDialogComponent } from '../../shared/confirm/confirm-dialog';
 import { QuickFindComponent } from '../../shared/quick-find/quick-find';
 import { QuickFindService } from '../../core/quick-find.service';
 import { ThemeService } from '../../core/theme.service';
+import { BrandingService } from '../../core/branding.service';
 
 interface Crumb {
   readonly label: string;
@@ -98,6 +99,8 @@ export class ShellComponent {
   protected readonly theme = inject(ThemeService);
 
   readonly user = this.auth.user;
+  /** Configured site branding (logo / name) for the sidebar mark. */
+  readonly branding = inject(BrandingService).branding;
 
   readonly collapsed = signal(this.readCollapsed());
   readonly mobileOpen = signal(false);

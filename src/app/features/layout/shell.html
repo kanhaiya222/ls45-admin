@@ -4,8 +4,12 @@
 
   <aside class="sidebar">
     <div class="sidebar__brand">
-      <span class="sidebar__mark">LS45</span>
-      <span class="sidebar__name">Admin</span>
+      @if (branding()?.logoUrl) {
+        <img class="sidebar__logo" [src]="branding()!.logoUrl" [alt]="branding()?.siteName || 'LS45'" />
+      } @else {
+        <span class="sidebar__mark">{{ branding()?.siteName || 'LS45' }}</span>
+        <span class="sidebar__name">Admin</span>
+      }
     </div>
 
     <nav class="sidebar__nav">
