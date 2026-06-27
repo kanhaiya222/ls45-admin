@@ -124,6 +124,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/team/module-access').then((m) => m.ModuleAccessPage),
         title: 'Module Access · LS45 Admin',
       },
+      {
+        path: 'settings',
+        loadComponent: () => import('./features/settings/settings').then((m) => m.SettingsPage),
+        title: 'Settings · LS45 Admin',
+      },
     ],
   },
 ];

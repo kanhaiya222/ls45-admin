@@ -44,12 +44,13 @@ const SEGMENT_LABELS: Record<string, string> = {
   content: 'Content', pages: 'Pages', blog: 'Blog', categories: 'Categories',
   departures: 'Departures', manifest: 'Manifest', new: 'New', edit: 'Edit',
   team: 'Team', users: 'Team', roles: 'Roles', customers: 'Customers', 'module-access': 'Module Access',
+  settings: 'Settings',
 };
 
 /** Top-level routes that actually exist — only these breadcrumb segments are clickable. */
 const NAVIGABLE_ROUTES = new Set([
   '/packages', '/bookings', '/reports', '/taxonomy', '/content/pages', '/content/blog',
-  '/team/users', '/team/roles', '/team/module-access', '/customers',
+  '/team/users', '/team/roles', '/team/module-access', '/customers', '/settings',
 ]);
 
 /** Inline icon path data (24x24) keyed by name — avoids an icon-font dependency. */
@@ -65,6 +66,7 @@ const ICONS: Record<string, string> = {
   roles: 'M12 1l9 4v6c0 5-3.8 9.7-9 11-5.2-1.3-9-6-9-11V5zm0 2.2L5 6.3V11c0 3.8 2.8 7.5 7 8.7 4.2-1.2 7-4.9 7-8.7V6.3z',
   customers: 'M16 11a3 3 0 100-6 3 3 0 000 6zm-8 0a3 3 0 100-6 3 3 0 000 6zm0 2c-2.7 0-8 1.3-8 4v3h10v-3c0-1 .4-1.8 1-2.5C5 13.2 8 13 8 13zm8 0c-.3 0-.7 0-1.1.1 1.3 1 1.1 2 1.1 2.9v3h8v-3c0-2.7-5.3-4-8-4z',
   access: 'M12 1l9 4v6c0 5-3.8 9.7-9 11-5.2-1.3-9-6-9-11V5zm-1 9H7l5-5v3h4l-5 5z',
+  settings: 'M12 8a4 4 0 100 8 4 4 0 000-8zm9 4a7 7 0 00-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 00-2-1.2L16 3H8l-.5 2.4a7 7 0 00-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 003 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1c.6.5 1.3.9 2 1.2L8 21h8l.5-2.4c.7-.3 1.4-.7 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z',
 };
 
 /**
@@ -177,6 +179,7 @@ export class ShellComponent {
         { label: 'Team', route: '/team/users', icon: 'team', adminOnly: true },
         { label: 'Roles', route: '/team/roles', icon: 'roles', adminOnly: true },
         { label: 'Module Access', route: '/team/module-access', icon: 'access', superOnly: true },
+        { label: 'Settings', route: '/settings', icon: 'settings', adminOnly: true },
       ],
     },
   ];

@@ -503,3 +503,21 @@ export interface Permission {
   scope: string;
   description?: string;
 }
+
+/** Mirrors BrandingDto (GET /app/config.branding, GET/PUT /api/v1/admin/settings). */
+export interface Branding {
+  siteName: string;
+  tagline?: string | null;
+  logoUrl?: string | null;
+  faviconUrl?: string | null;
+  primaryColor: string;
+  accentColor: string;
+  headingFont: string;
+  bodyFont: string;
+  timezone: string;
+  currencyCode: string;
+  dateFormat: string;
+  supportEmail?: string | null;
+  supportPhone?: string | null;
+  socialLinks?: Record<string, string>;
+}

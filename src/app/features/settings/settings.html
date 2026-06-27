@@ -1,0 +1,154 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">Settings</h1>
+    <p class="page__sub">Control your customer site's look &amp; feel and shared configuration. Changes preview live; Save makes them go live.</p>
+  </div>
+  <div class="page__actions">
+    <button class="btn-outline" type="button" (click)="resetToSaved()" [disabled]="saving()">Reset</button>
+    <button class="btn-primary" type="button" (click)="save()" [disabled]="saving()">
+      {{ saving() ? 'Saving…' : 'Save changes' }}
+    </button>
+  </div>
+</header>
+
+<app-list-state [loading]="loading()" [error]="errored()" errorTitle="Couldn't load settings">
+  <nav class="tabs">
+    <button type="button" class="tab" [class.is-active]="tab() === 'branding'" (click)="setTab('branding')">Branding</button>
+    <button type="button" class="tab" [class.is-active]="tab() === 'localization'" (click)="setTab('localization')">Localization</button>
+    <button type="button" class="tab" [class.is-active]="tab() === 'contact'" (click)="setTab('contact')">Contact &amp; Social</button>
+  </nav>
+
+  <form [formGroup]="form" class="grid">
+    <!-- ── Branding ─────────────────────────────────────────────── -->
+    @if (tab() === 'branding') {
+      <section class="card pane">
+        <h2 class="pane__title">Identity</h2>
+        <label class="field">
+          <span class="field__label">Site name</span>
+          <input type="text" formControlName="siteName" />
+        </label>
+        <label class="field">
+          <span class="field__label">Tagline</span>
+          <input type="text" formControlName="tagline" placeholder="Short strapline" />
+        </label>
+
+        <span class="field__label">Logo</span>
+        <div class="logo">
+          <div class="logo__preview" [class.is-empty]="!logoPreview()">
+            @if (logoPreview()) { <img [src]="logoPreview()" alt="Logo preview" /> } @else { <span>No logo</span> }
+          </div>
+          <div class="logo__actions">
+            <label class="btn-outline btn-file">
+              Upload image
+              <input type="file" accept="image/*" (change)="onLogoSelected($event)" hidden />
+            </label>
+            @if (logoPreview()) {
+              <button type="button" class="btn-ghost" (click)="clearLogo()">Remove</button>
+            }
+            <p class="hint">PNG/SVG, under 512 KB. Stored with your settings.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card pane">
+        <h2 class="pane__title">Brand colours</h2>
+        <p class="pane__hint">Pick two colours — the full light→dark palette (buttons, links, headings) is generated automatically.</p>
+        <div class="colors">
+          <label class="color">
+            <span class="field__label">Primary</span>
+            <span class="color__row">
+              <input type="color" formControlName="primaryColor" />
+              <input type="text" class="color__hex" formControlName="primaryColor" />
+            </span>
+          </label>
+          <label class="color">
+            <span class="field__label">Accent</span>
+            <span class="color__row">
+              <input type="color" formControlName="accentColor" />
+              <input type="text" class="color__hex" formControlName="accentColor" />
+            </span>
+          </label>
+        </div>
+
+        <div class="font-row">
+          <label class="field">
+            <span class="field__label">Heading font</span>
+            <select formControlName="headingFont">
+              @for (f of fonts; track f) { <option [value]="f">{{ f }}</option> }
+            </select>
+          </label>
+          <label class="field">
+            <span class="field__label">Body font</span>
+            <select formControlName="bodyFont">
+              @for (f of fonts; track f) { <option [value]="f">{{ f }}</option> }
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="card pane preview">
+        <h2 class="pane__title">Live preview</h2>
+        <p class="preview__heading">The quick brown fox</p>
+        <p class="preview__body">This panel (and the whole admin) re-themes as you edit. Save to apply it to the customer site.</p>
+        <div class="preview__btns">
+          <button type="button" class="btn-primary" disabled>Primary button</button>
+          <button type="button" class="btn-outline" disabled>Secondary</button>
+          <span class="preview__chip">Accent chip</span>
+        </div>
+      </section>
+    }
+
+    <!-- ── Localization ─────────────────────────────────────────── -->
+    @if (tab() === 'localization') {
+      <section class="card pane">
+        <h2 class="pane__title">Localization</h2>
+        <div class="font-row">
+          <label class="field">
+            <span class="field__label">Timezone</span>
+            <select formControlName="timezone">
+              @for (tz of timezones; track tz) { <option [value]="tz">{{ tz }}</option> }
+            </select>
+          </label>
+          <label class="field">
+            <span class="field__label">Currency</span>
+            <select formControlName="currencyCode">
+              @for (c of currencies; track c) { <option [value]="c">{{ c }}</option> }
+            </select>
+          </label>
+        </div>
+        <label class="field">
+          <span class="field__label">Date format</span>
+          <select formControlName="dateFormat">
+            @for (d of dateFormats; track d) { <option [value]="d">{{ d }}</option> }
+          </select>
+        </label>
+        <p class="hint">Dates and prices across the site use these. Timezone is the default for displayed times.</p>
+      </section>
+    }
+
+    <!-- ── Contact & Social ─────────────────────────────────────── -->
+    @if (tab() === 'contact') {
+      <section class="card pane">
+        <h2 class="pane__title">Contact</h2>
+        <div class="font-row">
+          <label class="field">
+            <span class="field__label">Support email</span>
+            <input type="email" formControlName="supportEmail" placeholder="hello@yourbrand.com" />
+          </label>
+          <label class="field">
+            <span class="field__label">Support phone</span>
+            <input type="text" formControlName="supportPhone" placeholder="+91 …" />
+          </label>
+        </div>
+      </section>
+      <section class="card pane">
+        <h2 class="pane__title">Social links</h2>
+        <label class="field"><span class="field__label">Instagram</span><input type="url" formControlName="instagram" placeholder="https://instagram.com/…" /></label>
+        <label class="field"><span class="field__label">Facebook</span><input type="url" formControlName="facebook" placeholder="https://facebook.com/…" /></label>
+        <label class="field"><span class="field__label">X / Twitter</span><input type="url" formControlName="twitter" placeholder="https://x.com/…" /></label>
+        <label class="field"><span class="field__label">LinkedIn</span><input type="url" formControlName="linkedin" placeholder="https://linkedin.com/…" /></label>
+        <label class="field"><span class="field__label">YouTube</span><input type="url" formControlName="youtube" placeholder="https://youtube.com/…" /></label>
+      </section>
+    }
+  </form>
+</app-list-state>
