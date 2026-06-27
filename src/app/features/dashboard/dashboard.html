@@ -50,6 +50,27 @@
     }
   </div>
 
+  @if (departures().length) {
+    <section class="panel">
+      <h2 class="panel__title">Filling up · upcoming departures</h2>
+      <div class="fills">
+        @for (d of departures(); track d.publicId) {
+          <div class="fill">
+            <div class="fill__name">{{ d.packageName }}</div>
+            <div class="fill__meta">{{ d.startDate | date: 'd MMM' }} – {{ d.endDate | date: 'd MMM yyyy' }}</div>
+            <div class="fill__counts">
+              <span>{{ d.booked }} / {{ d.capacity }} booked</span>
+              <span class="fill__left" [class.fill__left--low]="d.seatsLeft <= 3">{{ d.seatsLeft }} left</span>
+            </div>
+            <div class="fill__bar">
+              <span [style.width.%]="d.fill" [class.is-high]="d.fill >= 80" [class.is-mid]="d.fill >= 50 && d.fill < 80"></span>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
   <section class="panel">
     <h2 class="panel__title">Quick actions</h2>
     <div class="qa">
