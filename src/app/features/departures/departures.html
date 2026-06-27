@@ -59,7 +59,7 @@
       <div class="pricing__grid">
         @for (pf of priceFields; track pf.control) {
           <label class="field">
-            <span class="field__label">{{ pf.label }} (₹)</span>
+            <span class="field__label">{{ pf.label }}</span>
             <input type="number" [formControlName]="pf.control" min="0" />
           </label>
         }
@@ -105,7 +105,7 @@
             <td>{{ d.availableSeats }}@if (d.soldOut) { <span class="tag">Sold out</span> }</td>
             <td>
               @if (d.pricing && d.pricing.length) {
-                ₹{{ d.pricing[0].price }}
+                {{ d.pricing[0].price| brandPrice }}
               } @else {
                 —
               }

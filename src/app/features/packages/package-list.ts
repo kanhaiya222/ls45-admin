@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { BrandPricePipe } from '../../core/brand-price.pipe';
 import { RouterLink } from '@angular/router';
 import { Observable, catchError, forkJoin, map, of } from 'rxjs';
 import { PackageAdminService } from '../../core/package-admin.service';
@@ -10,7 +10,7 @@ import { ConfirmService } from '../../core/confirm.service';
 
 @Component({
   selector: 'app-admin-package-list',
-  imports: [DecimalPipe, RouterLink, ListStateComponent],
+  imports: [BrandPricePipe, RouterLink, ListStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './package-list.html',
   styleUrl: './package-list.scss',

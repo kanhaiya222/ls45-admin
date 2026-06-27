@@ -41,7 +41,7 @@
     @if (revenue(); as r) {
       <article class="stat stat--accent">
         <span class="stat__ic stat__ic--teal"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M7 4h10v2h-3.1c.3.5.5 1.1.6 2H17v2h-2.5c-.5 2.3-2.4 3.8-4.9 3.9L14 20h-2.6L7 14.5V12h3c1.4 0 2.4-.7 2.8-2H7V8h5.8c-.4-1.2-1.4-2-2.8-2H7z"/></svg></span>
-        <div><span class="stat__num">₹{{ r.netRevenue | number: '1.0-0' }}</span><span class="stat__label">Net revenue · 30d</span></div>
+        <div><span class="stat__num">{{ r.netRevenue | brandPrice }}</span><span class="stat__label">Net revenue · 30d</span></div>
       </article>
       <article class="stat">
         <span class="stat__ic stat__ic--teal"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M3 17l6-6 4 4 8-8v4h2V3h-7v2h4l-7 7-4-4-8 8z"/></svg></span>
@@ -97,7 +97,7 @@
               <td>{{ p.packageName }}</td>
               <td class="num">{{ p.totalBookings }}</td>
               <td class="num">{{ p.confirmedBookings }}</td>
-              <td class="num">₹{{ p.confirmedRevenue | number: '1.0-0' }}</td>
+              <td class="num">{{ p.confirmedRevenue | brandPrice }}</td>
             </tr>
           }
         </tbody>

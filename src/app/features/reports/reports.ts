@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { BrandPricePipe } from '../../core/brand-price.pipe';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { catchError, forkJoin, of } from 'rxjs';
 import { ReportService } from '../../core/report.service';
@@ -12,7 +13,7 @@ import {
 
 @Component({
   selector: 'app-admin-reports',
-  imports: [ReactiveFormsModule],
+  imports: [BrandPricePipe, ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './reports.html',
   styleUrl: './reports.scss',

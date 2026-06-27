@@ -64,7 +64,7 @@
               }
             </td>
             <td>{{ p.categoryName || '—' }}</td>
-            <td>₹{{ p.basePrice | number: '1.0-0' }}</td>
+            <td>{{ p.basePrice | brandPrice }}</td>
             <td>{{ p.durationDays }}D / {{ p.durationNights }}N</td>
             <td><span class="status" [class]="statusClass(p.status)">{{ p.status }}</span></td>
             <td class="tbl__actions">

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { BrandPricePipe } from '../../core/brand-price.pipe';
+import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { catchError, forkJoin, map, of, switchMap } from 'rxjs';
 import { ReportService } from '../../core/report.service';
@@ -20,7 +21,7 @@ interface FillCard {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [DecimalPipe, DatePipe, RouterLink],
+  imports: [BrandPricePipe, DatePipe, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',

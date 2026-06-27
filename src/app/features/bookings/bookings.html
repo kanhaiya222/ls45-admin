@@ -32,7 +32,7 @@
             <td><span class="status" [class]="statusClass(b.status)">{{ label(b.status) }}</span></td>
             <td>{{ label(b.occupancyType) }}</td>
             <td>{{ b.numTravellers }}</td>
-            <td>₹{{ b.totalPrice | number: '1.0-0' }}</td>
+            <td>{{ b.totalPrice | brandPrice }}</td>
             <td>{{ b.createdAt | date: 'mediumDate' }}</td>
             <td class="tbl__actions">
               <button class="btn-mini" type="button" (click)="togglePayments(b)">
@@ -59,7 +59,7 @@
                     <tbody>
                       @for (p of paymentsFor(b.publicId); track p.publicId) {
                         <tr>
-                          <td>₹{{ p.amount | number: '1.0-0' }}</td>
+                          <td>{{ p.amount | brandPrice }}</td>
                           <td><span class="status" [class]="statusClass(p.status)">{{ label(p.status) }}</span></td>
                           <td>{{ p.gateway || '—' }}</td>
                           <td class="mono">{{ p.gatewayReference || '—' }}</td>
@@ -67,7 +67,7 @@
                         </tr>
                         @if (p.refundAmount) {
                           <tr class="refund">
-                            <td>−₹{{ p.refundAmount | number: '1.0-0' }}</td>
+                            <td>−{{ p.refundAmount | brandPrice }}</td>
                             <td>Refunded</td>
                             <td>—</td>
                             <td>—</td>

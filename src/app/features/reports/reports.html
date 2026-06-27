@@ -32,16 +32,16 @@
     <h2 class="section">Revenue</h2>
     <div class="stat-grid">
       <article class="stat stat--good">
-        <span class="stat__num">₹{{ r.netRevenue }}</span><span class="stat__label">Net revenue</span>
+        <span class="stat__num">{{ r.netRevenue| brandPrice }}</span><span class="stat__label">Net revenue</span>
       </article>
       <article class="stat">
-        <span class="stat__num">₹{{ r.grossRevenue }}</span><span class="stat__label">Gross revenue</span>
+        <span class="stat__num">{{ r.grossRevenue| brandPrice }}</span><span class="stat__label">Gross revenue</span>
       </article>
       <article class="stat">
-        <span class="stat__num">₹{{ r.taxCollected }}</span><span class="stat__label">Tax collected</span>
+        <span class="stat__num">{{ r.taxCollected| brandPrice }}</span><span class="stat__label">Tax collected</span>
       </article>
       <article class="stat stat--bad">
-        <span class="stat__num">₹{{ r.totalRefunds }}</span><span class="stat__label">Refunds</span>
+        <span class="stat__num">{{ r.totalRefunds| brandPrice }}</span><span class="stat__label">Refunds</span>
       </article>
       <article class="stat">
         <span class="stat__num">{{ r.confirmedBookingCount }}</span>
@@ -78,13 +78,13 @@
     <div class="card">
       <div class="card__head">
         <span>{{ pay.totalTransactions }} transactions</span>
-        <span class="card__total">₹{{ pay.totalAmount }}</span>
+        <span class="card__total">{{ pay.totalAmount| brandPrice }}</span>
       </div>
       <table class="tbl">
         <thead><tr><th>Status</th><th>Count</th><th>Amount</th></tr></thead>
         <tbody>
           @for (s of pay.byStatus; track s.status) {
-            <tr><td>{{ s.status }}</td><td>{{ s.count }}</td><td>₹{{ s.amount }}</td></tr>
+            <tr><td>{{ s.status }}</td><td>{{ s.count }}</td><td>{{ s.amount| brandPrice }}</td></tr>
           } @empty {
             <tr><td colspan="3" class="muted">No payments in this period.</td></tr>
           }
@@ -106,7 +106,7 @@
             <td>{{ p.totalBookings }}</td>
             <td>{{ p.confirmedBookings }}</td>
             <td>{{ p.cancelledBookings }}</td>
-            <td>₹{{ p.confirmedRevenue }}</td>
+            <td>{{ p.confirmedRevenue| brandPrice }}</td>
           </tr>
         } @empty {
           <tr><td colspan="5" class="muted">No bookings in this period.</td></tr>

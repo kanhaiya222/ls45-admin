@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { BrandPricePipe } from '../../core/brand-price.pipe';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DepartureAdminService } from '../../core/departure-admin.service';
@@ -14,7 +15,7 @@ interface PriceField {
 
 @Component({
   selector: 'app-admin-departures',
-  imports: [ReactiveFormsModule, RouterLink, ListStateComponent],
+  imports: [BrandPricePipe, ReactiveFormsModule, RouterLink, ListStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './departures.html',
   styleUrl: './departures.scss',
