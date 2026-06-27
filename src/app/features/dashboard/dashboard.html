@@ -1,36 +1,88 @@
 <header class="page__head">
-  <h1 class="page__title">Dashboard</h1>
-  <p class="page__sub">Overview of bookings across your wellness journeys.</p>
+  <div>
+    <h1 class="page__title">Dashboard</h1>
+    <p class="page__sub">Bookings and revenue across your wellness journeys.</p>
+  </div>
+  <a class="btn-primary" routerLink="/packages/new">
+    <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>
+    New package
+  </a>
 </header>
 
 @if (loading()) {
   <div class="stat-grid">
-    @for (s of [0, 1, 2, 3]; track s) {
+    @for (s of [0, 1, 2, 3, 4, 5]; track s) {
       <article class="stat stat--skeleton"><div class="sk sk-num"></div><div class="sk sk-label"></div></article>
     }
   </div>
 } @else if (errored()) {
   <div class="state state--error">
-    <h3>Couldn't load dashboard</h3>
+    <h3>Couldn&rsquo;t load the dashboard</h3>
     <p>Please ensure the API is running, then refresh.</p>
   </div>
-} @else if (stats(); as s) {
+} @else {
   <div class="stat-grid">
     <article class="stat">
-      <span class="stat__num">{{ s.totalBookings }}</span>
-      <span class="stat__label">Total bookings</span>
+      <span class="stat__ic stat__ic--teal"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 4h16v4H4zm0 6h16v10H4zm2 2v6h12v-6z"/></svg></span>
+      <div><span class="stat__num">{{ stats()?.totalBookings ?? 0 }}</span><span class="stat__label">Total bookings</span></div>
     </article>
     <article class="stat stat--good">
-      <span class="stat__num">{{ s.confirmedBookings }}</span>
-      <span class="stat__label">Confirmed</span>
+      <span class="stat__ic stat__ic--teal"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M9 16.2l-3.5-3.5L4 14.2 9 19.2 20 8.2l-1.5-1.5z"/></svg></span>
+      <div><span class="stat__num">{{ stats()?.confirmedBookings ?? 0 }}</span><span class="stat__label">Confirmed</span></div>
     </article>
     <article class="stat stat--warn">
-      <span class="stat__num">{{ s.pendingBookings }}</span>
-      <span class="stat__label">Pending payment</span>
+      <span class="stat__ic stat__ic--amber"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 5v6l5 3-1 1.7L11 14V7z"/></svg></span>
+      <div><span class="stat__num">{{ stats()?.pendingBookings ?? 0 }}</span><span class="stat__label">Pending payment</span></div>
     </article>
     <article class="stat stat--bad">
-      <span class="stat__num">{{ s.cancelledBookings }}</span>
-      <span class="stat__label">Cancelled</span>
+      <span class="stat__ic stat__ic--coral"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 100 20 10 10 0 000-20zm5 13.6L15.6 17 12 13.4 8.4 17 7 15.6 10.6 12 7 8.4 8.4 7 12 10.6 15.6 7 17 8.4 13.4 12z"/></svg></span>
+      <div><span class="stat__num">{{ stats()?.cancelledBookings ?? 0 }}</span><span class="stat__label">Cancelled</span></div>
     </article>
+    @if (revenue(); as r) {
+      <article class="stat stat--accent">
+        <span class="stat__ic stat__ic--teal"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M7 4h10v2h-3.1c.3.5.5 1.1.6 2H17v2h-2.5c-.5 2.3-2.4 3.8-4.9 3.9L14 20h-2.6L7 14.5V12h3c1.4 0 2.4-.7 2.8-2H7V8h5.8c-.4-1.2-1.4-2-2.8-2H7z"/></svg></span>
+        <div><span class="stat__num">₹{{ r.netRevenue | number: '1.0-0' }}</span><span class="stat__label">Net revenue · 30d</span></div>
+      </article>
+      <article class="stat">
+        <span class="stat__ic stat__ic--teal"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M3 17l6-6 4 4 8-8v4h2V3h-7v2h4l-7 7-4-4-8 8z"/></svg></span>
+        <div><span class="stat__num">{{ r.confirmedBookingCount }}</span><span class="stat__label">Confirmed · 30d</span></div>
+      </article>
+    }
   </div>
+
+  <section class="panel">
+    <h2 class="panel__title">Quick actions</h2>
+    <div class="qa">
+      <a class="qa__item" routerLink="/packages/new"><span class="qa__ic">＋</span> New journey</a>
+      <a class="qa__item" routerLink="/bookings"><span class="qa__ic">▦</span> Manage bookings</a>
+      <a class="qa__item" routerLink="/reports"><span class="qa__ic">▤</span> View reports</a>
+      <a class="qa__item" routerLink="/content/pages"><span class="qa__ic">✎</span> Edit content</a>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel__head">
+      <h2 class="panel__title">Top journeys · last 30 days</h2>
+      <a class="panel__link" routerLink="/reports">Full reports →</a>
+    </div>
+    @if (topPackages().length) {
+      <table class="tbl">
+        <thead>
+          <tr><th>Journey</th><th class="num">Bookings</th><th class="num">Confirmed</th><th class="num">Revenue</th></tr>
+        </thead>
+        <tbody>
+          @for (p of topPackages(); track p.packagePublicId) {
+            <tr>
+              <td>{{ p.packageName }}</td>
+              <td class="num">{{ p.totalBookings }}</td>
+              <td class="num">{{ p.confirmedBookings }}</td>
+              <td class="num">₹{{ p.confirmedRevenue | number: '1.0-0' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <p class="panel__empty">No booking activity in the last 30 days yet.</p>
+    }
+  </section>
 }
