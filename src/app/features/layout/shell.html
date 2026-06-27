@@ -52,9 +52,36 @@
       </nav>
       <div class="topbar__spacer"></div>
       @if (user(); as u) {
-        <span class="topbar__user">{{ u.firstName }} {{ u.lastName }}</span>
+        <div class="usermenu">
+          <button
+            class="usermenu__btn"
+            type="button"
+            (click)="toggleUserMenu()"
+            [class.is-open]="userMenuOpen()"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="userMenuOpen()">
+            <span class="usermenu__avatar">{{ initials() }}</span>
+            <span class="usermenu__name">{{ u.firstName }}</span>
+            <svg class="usermenu__chev" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 15.4l-6-6L7.4 8l4.6 4.6L16.6 8 18 9.4z"/></svg>
+          </button>
+          @if (userMenuOpen()) {
+            <div class="usermenu__backdrop" (click)="closeUserMenu()"></div>
+            <div class="usermenu__pop" role="menu">
+              <div class="usermenu__id">
+                <span class="usermenu__avatar usermenu__avatar--lg">{{ initials() }}</span>
+                <div class="usermenu__idtext">
+                  <strong>{{ u.firstName }} {{ u.lastName }}</strong>
+                  <small>{{ u.email }}</small>
+                </div>
+              </div>
+              <button class="usermenu__item" type="button" role="menuitem" (click)="logout()">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M16 17v-3H9v-4h7V7l5 5zM14 2a2 2 0 012 2v2h-2V4H5v16h9v-2h2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V4a2 2 0 012-2z"/></svg>
+                Log out
+              </button>
+            </div>
+          }
+        </div>
       }
-      <button class="btn-outline" type="button" (click)="logout()">Log out</button>
     </header>
     <main class="content">
       <router-outlet />

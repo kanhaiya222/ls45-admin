@@ -82,6 +82,12 @@ export class ShellComponent {
   readonly crumbs = signal<Crumb[]>([{ label: 'Dashboard', url: '/', link: false }]);
   readonly pageTitle = computed(() => this.crumbs().at(-1)?.label ?? 'Dashboard');
 
+  readonly userMenuOpen = signal(false);
+  readonly initials = computed(() => {
+    const u = this.user();
+    return u ? `${u.firstName?.[0] ?? ''}${u.lastName?.[0] ?? ''}`.toUpperCase() : '';
+  });
+
   constructor() {
     this.reports.getBookingStats().subscribe({
       next: (s) => this.badges.set({ bookings: s.pendingBookings }),
@@ -168,7 +174,16 @@ export class ShellComponent {
     this.mobileOpen.set(false);
   }
 
+  toggleUserMenu(): void {
+    this.userMenuOpen.update((open) => !open);
+  }
+
+  closeUserMenu(): void {
+    this.userMenuOpen.set(false);
+  }
+
   logout(): void {
+    this.userMenuOpen.set(false);
     this.auth.logout();
     this.router.navigateByUrl('/login');
   }
