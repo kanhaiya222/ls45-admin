@@ -1,12 +1,15 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { ReportService } from '../../core/report.service';
 
 interface NavItem {
   readonly label: string;
   readonly route: string;
   readonly icon: string;
   readonly exact?: boolean;
+  /** Key into the live `badges` map for a count chip (e.g. pending bookings). */
+  readonly badgeKey?: string;
 }
 
 interface NavGroup {
@@ -45,11 +48,24 @@ const ICONS: Record<string, string> = {
 export class ShellComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly reports = inject(ReportService);
 
   readonly user = this.auth.user;
 
   readonly collapsed = signal(this.readCollapsed());
   readonly mobileOpen = signal(false);
+
+  /** Live counts surfaced as nav badges (best-effort; silently empty if the report fails). */
+  readonly badges = signal<Record<string, number>>({});
+
+  constructor() {
+    this.reports.getBookingStats().subscribe({
+      next: (s) => this.badges.set({ bookings: s.pendingBookings }),
+      error: () => {
+        /* badge is optional — leave it empty */
+      },
+    });
+  }
 
   readonly groups: readonly NavGroup[] = [
     { label: 'Overview', items: [{ label: 'Dashboard', route: '/', icon: 'dashboard', exact: true }] },
@@ -60,7 +76,7 @@ export class ShellComponent {
         { label: 'Taxonomy', route: '/taxonomy', icon: 'taxonomy' },
       ],
     },
-    { label: 'Operations', items: [{ label: 'Bookings', route: '/bookings', icon: 'bookings' }] },
+    { label: 'Operations', items: [{ label: 'Bookings', route: '/bookings', icon: 'bookings', badgeKey: 'bookings' }] },
     {
       label: 'Content',
       items: [
@@ -73,6 +89,10 @@ export class ShellComponent {
 
   iconPath(key: string): string {
     return ICONS[key] ?? '';
+  }
+
+  badgeCount(item: NavItem): number {
+    return item.badgeKey ? this.badges()[item.badgeKey] ?? 0 : 0;
   }
 
   /** Hamburger: collapse the rail on desktop, toggle the drawer on mobile. */

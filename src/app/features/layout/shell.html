@@ -22,6 +22,9 @@
               <path fill="currentColor" [attr.d]="iconPath(it.icon)" />
             </svg>
             <span class="sb-label">{{ it.label }}</span>
+            @if (badgeCount(it); as n) {
+              <span class="sb-badge" [attr.aria-label]="n + ' ' + it.label">{{ n }}</span>
+            }
           </a>
         }
       }
