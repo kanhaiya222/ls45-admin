@@ -160,4 +160,21 @@
   display: block;
 }
 
+/* ---- bulk selection ---- */
+.tbl__check { width: 44px; text-align: center; padding-right: 0; }
+.tbl__check input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--teal-700); }
+.tbl tbody tr.is-selected td { background: var(--teal-100); }
+
+.bulkbar {
+  display: flex; align-items: center; gap: 10px; padding: 12px 18px;
+  background: var(--teal-900); color: #fff; flex-wrap: wrap;
+}
+.bulkbar__count { font-size: 13px; font-weight: 600; margin-right: 4px; }
+.bulkbar .btn-mini { margin-left: 0; }
+.bulkbar__clear {
+  margin-left: auto; background: none; border: none; color: rgba(255, 255, 255, 0.8);
+  font-size: 13px; cursor: pointer; text-decoration: underline;
+}
+.bulkbar__clear:hover { color: #fff; }
+
 /* loading / error / empty state + skeleton styles moved to the shared ListStateComponent */

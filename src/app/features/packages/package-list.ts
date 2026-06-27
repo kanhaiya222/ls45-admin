@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Observable, catchError, forkJoin, map, of } from 'rxjs';
 import { PackageAdminService } from '../../core/package-admin.service';
 import { PackageListItem } from '../../core/models';
 import { ListStateComponent } from '../../shared/list-state/list-state';
@@ -30,6 +31,13 @@ export class PackageListPage {
   readonly actingId = signal<string | null>(null);
   private page = 0;
 
+  readonly selected = signal<Set<string>>(new Set<string>());
+  readonly selectedCount = computed(() => this.selected().size);
+  readonly allSelected = computed(
+    () => this.items().length > 0 && this.items().every((p) => this.selected().has(p.publicId)),
+  );
+  readonly bulkBusy = signal(false);
+
   constructor() {
     this.load(0);
   }
@@ -39,6 +47,7 @@ export class PackageListPage {
       return;
     }
     this.activeStatus.set(status);
+    this.clearSelection();
     this.load(0);
   }
 
@@ -139,5 +148,79 @@ export class PackageListPage {
 
   canPublish(status: string): boolean {
     return status === 'DRAFT' || status === 'REVIEW';
+  }
+
+  // ---- bulk selection ----
+  isSelected(id: string): boolean {
+    return this.selected().has(id);
+  }
+
+  toggleOne(id: string): void {
+    this.selected.update((set) => {
+      const next = new Set(set);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  toggleAll(): void {
+    const all = this.items();
+    this.selected.update((set) =>
+      all.every((p) => set.has(p.publicId)) ? new Set<string>() : new Set(all.map((p) => p.publicId)),
+    );
+  }
+
+  clearSelection(): void {
+    this.selected.set(new Set<string>());
+  }
+
+  bulkPublish(): void {
+    const targets = this.items().filter((p) => this.selected().has(p.publicId) && this.canPublish(p.status));
+    if (targets.length) {
+      this.runBulk(targets, (p) => this.packagesApi.publish(p.publicId), 'published');
+    }
+  }
+
+  async bulkArchive(): Promise<void> {
+    const targets = this.items().filter((p) => this.selected().has(p.publicId) && p.status === 'PUBLISHED');
+    if (!targets.length) {
+      return;
+    }
+    const ok = await this.confirm.ask({
+      title: `Archive ${targets.length} package${targets.length > 1 ? 's' : ''}?`,
+      message: 'They will be hidden from the catalogue. You can republish them later.',
+      confirmText: 'Archive',
+      danger: true,
+    });
+    if (ok) {
+      this.runBulk(targets, (p) => this.packagesApi.archive(p.publicId), 'archived');
+    }
+  }
+
+  private runBulk(
+    targets: PackageListItem[],
+    op: (p: PackageListItem) => Observable<void>,
+    verb: string,
+  ): void {
+    this.bulkBusy.set(true);
+    forkJoin(targets.map((p) => op(p).pipe(map(() => true), catchError(() => of(false))))).subscribe(
+      (results) => {
+        const done = results.filter(Boolean).length;
+        const failed = results.length - done;
+        this.bulkBusy.set(false);
+        this.clearSelection();
+        if (done) {
+          this.toast.success(`${done} package${done > 1 ? 's' : ''} ${verb}`);
+        }
+        if (failed) {
+          this.toast.error(`${failed} could not be ${verb}`);
+        }
+        this.load(0);
+      },
+    );
   }
 }

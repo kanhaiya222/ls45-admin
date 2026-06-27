@@ -29,9 +29,20 @@
   emptyText="No packages match this status."
 >
   <div class="card">
+    @if (selectedCount() > 0) {
+      <div class="bulkbar">
+        <span class="bulkbar__count">{{ selectedCount() }} selected</span>
+        <button class="btn-mini btn-mini--go" type="button" [disabled]="bulkBusy()" (click)="bulkPublish()">Publish</button>
+        <button class="btn-mini" type="button" [disabled]="bulkBusy()" (click)="bulkArchive()">Archive</button>
+        <button class="bulkbar__clear" type="button" (click)="clearSelection()">Clear</button>
+      </div>
+    }
     <table class="tbl">
       <thead>
         <tr>
+          <th class="tbl__check">
+            <input type="checkbox" [checked]="allSelected()" (change)="toggleAll()" aria-label="Select all" />
+          </th>
           <th>Name</th>
           <th>Category</th>
           <th>Price</th>
@@ -42,7 +53,10 @@
       </thead>
       <tbody>
         @for (p of items(); track p.publicId) {
-          <tr>
+          <tr [class.is-selected]="isSelected(p.publicId)">
+            <td class="tbl__check">
+              <input type="checkbox" [checked]="isSelected(p.publicId)" (change)="toggleOne(p.publicId)" [attr.aria-label]="'Select ' + p.name" />
+            </td>
             <td>
               <span class="tbl__name">{{ p.name }}</span>
               @if (p.featured) {
