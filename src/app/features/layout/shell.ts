@@ -37,11 +37,13 @@ const SEGMENT_LABELS: Record<string, string> = {
   packages: 'Packages', bookings: 'Bookings', reports: 'Reports', taxonomy: 'Taxonomy',
   content: 'Content', pages: 'Pages', blog: 'Blog', categories: 'Categories',
   departures: 'Departures', manifest: 'Manifest', new: 'New', edit: 'Edit',
+  team: 'Team', users: 'Team', roles: 'Roles', customers: 'Customers',
 };
 
 /** Top-level routes that actually exist — only these breadcrumb segments are clickable. */
 const NAVIGABLE_ROUTES = new Set([
   '/packages', '/bookings', '/reports', '/taxonomy', '/content/pages', '/content/blog',
+  '/team/users', '/team/roles', '/customers',
 ]);
 
 /** Inline icon path data (24x24) keyed by name — avoids an icon-font dependency. */
@@ -53,6 +55,9 @@ const ICONS: Record<string, string> = {
   pages: 'M6 2h9l5 5v15H6zm8 1.5V8h4.5zM8 12h8v2H8zm0 4h8v2H8z',
   blog: 'M3 17.2V21h3.8L18 9.8 14.2 6zM20.7 7a1 1 0 000-1.4L18.4 3.3a1 1 0 00-1.4 0l-1.8 1.8L19 8.8z',
   reports: 'M4 13h4v8H4zm6-6h4v14h-4zm6 3h4v11h-4z',
+  team: 'M12 12a4 4 0 100-8 4 4 0 000 8zm-8 9a8 8 0 0116 0z',
+  roles: 'M12 1l9 4v6c0 5-3.8 9.7-9 11-5.2-1.3-9-6-9-11V5zm0 2.2L5 6.3V11c0 3.8 2.8 7.5 7 8.7 4.2-1.2 7-4.9 7-8.7V6.3z',
+  customers: 'M16 11a3 3 0 100-6 3 3 0 000 6zm-8 0a3 3 0 100-6 3 3 0 000 6zm0 2c-2.7 0-8 1.3-8 4v3h10v-3c0-1 .4-1.8 1-2.5C5 13.2 8 13 8 13zm8 0c-.3 0-.7 0-1.1.1 1.3 1 1.1 2 1.1 2.9v3h8v-3c0-2.7-5.3-4-8-4z',
 };
 
 /**
@@ -153,6 +158,14 @@ export class ShellComponent {
       ],
     },
     { label: 'Insights', items: [{ label: 'Reports', route: '/reports', icon: 'reports' }] },
+    {
+      label: 'Team & Access',
+      items: [
+        { label: 'Team', route: '/team/users', icon: 'team' },
+        { label: 'Roles', route: '/team/roles', icon: 'roles' },
+        { label: 'Customers', route: '/customers', icon: 'customers' },
+      ],
+    },
   ];
 
   iconPath(key: string): string {

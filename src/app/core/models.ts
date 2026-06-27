@@ -451,3 +451,53 @@ export interface PackagePerformance {
   cancelledBookings: number;
   confirmedRevenue: number;
 }
+
+// ── Team & Access (users / roles / permissions) ──────────────────────────────
+
+export type UserStatus = 'ACTIVE' | 'SUSPENDED' | 'PENDING';
+
+/** Mirrors AdminUserResponse (GET /api/v1/admin/users). */
+export interface AdminUser {
+  publicId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  status: string;
+  roles: string[];
+  createdAt?: string;
+  lastLoginAt?: string;
+}
+
+/** Body for POST /api/v1/admin/users (CreateStaffUserRequest). */
+export interface CreateStaffUserPayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
+/** Mirrors RoleResponse (GET /api/v1/admin/roles). `system` roles are locked (no edit/delete). */
+export interface Role {
+  publicId: string;
+  name: string;
+  description?: string;
+  permissionCodes: string[];
+  system: boolean;
+}
+
+/** Body for POST/PUT /api/v1/admin/roles (CreateRoleRequest). */
+export interface CreateRolePayload {
+  name: string;
+  description?: string;
+  permissionCodes: string[];
+}
+
+/** Mirrors PermissionResponse (GET /api/v1/admin/permissions). code = RESOURCE:ACTION:SCOPE. */
+export interface Permission {
+  code: string;
+  resource: string;
+  action: string;
+  scope: string;
+  description?: string;
+}

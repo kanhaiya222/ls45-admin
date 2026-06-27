@@ -103,6 +103,21 @@ export const routes: Routes = [
         loadComponent: () => import('./features/blog/blog-form').then((m) => m.BlogFormPage),
         title: 'Edit post · LS45 Admin',
       },
+      {
+        path: 'team/users',
+        loadComponent: () => import('./features/team/team-users').then((m) => m.TeamUsersPage),
+        title: 'Team · LS45 Admin',
+      },
+      {
+        path: 'team/roles',
+        loadComponent: () => import('./features/team/team-roles').then((m) => m.TeamRolesPage),
+        title: 'Roles & permissions · LS45 Admin',
+      },
+      {
+        path: 'customers',
+        loadComponent: () => import('./features/customers/customers').then((m) => m.CustomersPage),
+        title: 'Customers · LS45 Admin',
+      },
     ],
   },
 ];

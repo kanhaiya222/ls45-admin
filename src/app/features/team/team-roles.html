@@ -1,0 +1,105 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">Roles &amp; permissions</h1>
+    <p class="page__sub">
+      Build roles from permissions, then assign them to team members. System roles are locked.
+    </p>
+  </div>
+  @if (!isEditing()) {
+    <button class="btn-primary" type="button" (click)="startCreate()">New role</button>
+  }
+</header>
+
+@if (isEditing()) {
+  <form class="editor card" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="editor__head">
+      <h2 class="editor__title">{{ editingId() ? 'Edit role' : 'New role' }}</h2>
+      <span class="editor__count">{{ selectedCount() }} permissions selected</span>
+    </div>
+
+    @if (formError()) {
+      <div class="editor__error" role="alert">{{ formError() }}</div>
+    }
+
+    <div class="editor__row">
+      <label class="field">
+        <span class="field__label">Role name</span>
+        <input type="text" formControlName="name" placeholder="e.g. Content Editor" />
+      </label>
+      <label class="field">
+        <span class="field__label">Description (optional)</span>
+        <input type="text" formControlName="description" placeholder="What this role is for" />
+      </label>
+    </div>
+
+    <div class="matrix">
+      @for (g of groups(); track g.resource) {
+        <fieldset class="matrix__group">
+          <legend class="matrix__legend">
+            <label class="matrix__all">
+              <input type="checkbox" [checked]="allInGroup(g)" (change)="toggleGroup(g)" />
+              {{ label(g.resource) }}
+            </label>
+          </legend>
+          <div class="matrix__perms">
+            @for (p of g.permissions; track p.code) {
+              <label class="perm" [class.perm--on]="isChecked(p.code)">
+                <input type="checkbox" [checked]="isChecked(p.code)" (change)="toggle(p.code)" />
+                <span>{{ actionLabel(p) }}</span>
+              </label>
+            }
+          </div>
+        </fieldset>
+      } @empty {
+        <p class="muted">No permissions available to assign.</p>
+      }
+    </div>
+
+    <div class="editor__actions">
+      <button class="btn-outline" type="button" (click)="cancelEdit()">Cancel</button>
+      <button class="btn-primary" type="submit" [disabled]="saving()">
+        {{ saving() ? 'Saving…' : (editingId() ? 'Save changes' : 'Create role') }}
+      </button>
+    </div>
+  </form>
+} @else {
+  <app-list-state
+    [loading]="loading()"
+    [error]="errored()"
+    [empty]="roles().length === 0"
+    errorTitle="Couldn't load roles"
+    emptyTitle="No roles yet"
+  >
+    <div class="card">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Permissions</th>
+            <th class="tbl__actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of roles(); track r.publicId) {
+            <tr>
+              <td>
+                <span class="tbl__ref">{{ label(r.name) }}</span>
+                @if (r.system) { <span class="chip chip--system">System</span> }
+                @if (r.description) { <span class="tbl__desc">{{ r.description }}</span> }
+              </td>
+              <td class="muted">{{ r.permissionCodes.length }} permission(s)</td>
+              <td class="tbl__actions">
+                @if (r.system) {
+                  <span class="muted">Locked</span>
+                } @else {
+                  <button class="btn-mini" type="button" (click)="startEdit(r)">Edit</button>
+                  <button class="btn-mini btn-mini--bad" type="button" (click)="remove(r)">Delete</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </app-list-state>
+}

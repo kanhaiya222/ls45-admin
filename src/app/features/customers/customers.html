@@ -1,0 +1,66 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">Customers</h1>
+    <p class="page__sub">People who registered on the website or app to book journeys.</p>
+  </div>
+</header>
+
+<div class="toolbar">
+  <input
+    class="toolbar__search"
+    type="search"
+    placeholder="Search by name or email…"
+    [value]="search()"
+    (keyup.enter)="applySearch($any($event.target).value)"
+    (search)="applySearch($any($event.target).value)"
+  />
+</div>
+
+<app-list-state
+  [loading]="loading()"
+  [error]="errored()"
+  [empty]="items().length === 0"
+  errorTitle="Couldn't load customers"
+  emptyTitle="No customers yet"
+  emptyText="Customers appear here once people register on the website or app."
+>
+  <div class="card">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Customer</th>
+          <th>Contact</th>
+          <th>Status</th>
+          <th>Joined</th>
+          <th class="tbl__actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (u of items(); track u.publicId) {
+          <tr>
+            <td><span class="tbl__ref">{{ u.firstName }} {{ u.lastName }}</span></td>
+            <td>
+              <span class="tbl__email">{{ u.email }}</span>
+              @if (u.phone) { <span class="tbl__phone">{{ u.phone }}</span> }
+            </td>
+            <td><span class="status" [class]="statusClass(u.status)">{{ label(u.status) }}</span></td>
+            <td class="muted">{{ u.createdAt ? (u.createdAt | date: 'd MMM y') : '—' }}</td>
+            <td class="tbl__actions">
+              @if (u.status === 'SUSPENDED') {
+                <button class="btn-mini" type="button" (click)="setStatus(u, false)">Reactivate</button>
+              } @else {
+                <button class="btn-mini btn-mini--bad" type="button" (click)="setStatus(u, true)">Suspend</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (!last()) {
+    <button class="btn-outline tbl__more" type="button" [disabled]="loadingMore()" (click)="loadMore()">
+      {{ loadingMore() ? 'Loading…' : 'Load more' }}
+    </button>
+  }
+</app-list-state>

@@ -1,0 +1,145 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">Team</h1>
+    <p class="page__sub">Staff who can sign in to the admin. Assign roles to control what they can do.</p>
+  </div>
+  <button class="btn-primary" type="button" (click)="toggleInvite()">
+    {{ inviteOpen() ? 'Close' : 'Invite member' }}
+  </button>
+</header>
+
+@if (inviteOpen()) {
+  <form class="invite card" [formGroup]="inviteForm" (ngSubmit)="invite()" novalidate>
+    <h2 class="invite__title">Invite a team member</h2>
+    @if (inviteError()) {
+      <div class="invite__error" role="alert">{{ inviteError() }}</div>
+    }
+    <div class="invite__row">
+      <label class="field">
+        <span class="field__label">First name</span>
+        <input type="text" formControlName="firstName" autocomplete="off" />
+      </label>
+      <label class="field">
+        <span class="field__label">Last name</span>
+        <input type="text" formControlName="lastName" autocomplete="off" />
+      </label>
+    </div>
+    <div class="invite__row">
+      <label class="field">
+        <span class="field__label">Email</span>
+        <input type="email" formControlName="email" autocomplete="off" />
+      </label>
+      <label class="field">
+        <span class="field__label">Temporary password</span>
+        <input type="text" formControlName="password" autocomplete="off" placeholder="min 8 characters" />
+      </label>
+    </div>
+    <label class="field">
+      <span class="field__label">Role</span>
+      <select formControlName="role">
+        <option value="" disabled>Choose a role…</option>
+        @for (r of assignableRoles(); track r.publicId) {
+          <option [value]="r.name">{{ label(r.name) }}</option>
+        }
+      </select>
+    </label>
+    <div class="invite__actions">
+      <button class="btn-primary" type="submit" [disabled]="saving()">
+        {{ saving() ? 'Adding…' : 'Add member' }}
+      </button>
+    </div>
+  </form>
+}
+
+<div class="toolbar">
+  <input
+    class="toolbar__search"
+    type="search"
+    placeholder="Search by name or email…"
+    [value]="search()"
+    (keyup.enter)="applySearch($any($event.target).value)"
+    (search)="applySearch($any($event.target).value)"
+  />
+</div>
+
+<app-list-state
+  [loading]="loading()"
+  [error]="errored()"
+  [empty]="items().length === 0"
+  errorTitle="Couldn't load the team"
+  emptyTitle="No team members yet"
+  emptyText="Invite your first staff member to get started."
+>
+  <div class="card">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Member</th>
+          <th>Roles</th>
+          <th>Status</th>
+          <th>Last active</th>
+          <th class="tbl__actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (u of items(); track u.publicId) {
+          <tr>
+            <td>
+              <span class="tbl__ref">{{ u.firstName }} {{ u.lastName }}</span>
+              @if (isSelf(u)) { <span class="chip chip--you">You</span> }
+              <span class="tbl__email">{{ u.email }}</span>
+            </td>
+            <td>
+              <div class="roles">
+                @for (r of u.roles; track r) {
+                  <span class="chip chip--role">
+                    {{ label(r) }}
+                    <button
+                      type="button"
+                      class="chip__x"
+                      title="Remove role"
+                      [disabled]="busyId() === u.publicId"
+                      (click)="removeRole(u, r)"
+                    >×</button>
+                  </span>
+                } @empty {
+                  <span class="muted">No role</span>
+                }
+                @if (rolesNotOn(u).length > 0) {
+                  <select
+                    class="roles__add"
+                    [disabled]="busyId() === u.publicId"
+                    (change)="addRole(u, $any($event.target).value); $any($event.target).value = ''"
+                  >
+                    <option value="">+ Add role</option>
+                    @for (r of rolesNotOn(u); track r.publicId) {
+                      <option [value]="r.name">{{ label(r.name) }}</option>
+                    }
+                  </select>
+                }
+              </div>
+            </td>
+            <td><span class="status" [class]="statusClass(u.status)">{{ label(u.status) }}</span></td>
+            <td class="muted">{{ u.lastLoginAt ? (u.lastLoginAt | date: 'd MMM y') : '—' }}</td>
+            <td class="tbl__actions">
+              @if (u.status === 'SUSPENDED') {
+                <button class="btn-mini" type="button" (click)="setStatus(u, false)">Reactivate</button>
+              } @else if (!isSelf(u)) {
+                <button class="btn-mini" type="button" (click)="setStatus(u, true)">Suspend</button>
+              }
+              @if (!isSelf(u)) {
+                <button class="btn-mini btn-mini--bad" type="button" (click)="remove(u)">Remove</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (!last()) {
+    <button class="btn-outline tbl__more" type="button" [disabled]="loadingMore()" (click)="loadMore()">
+      {{ loadingMore() ? 'Loading…' : 'Load more' }}
+    </button>
+  }
+</app-list-state>
