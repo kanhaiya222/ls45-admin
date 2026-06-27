@@ -7,6 +7,7 @@
   width: var(--sidebar-w); flex-shrink: 0; background: #04342c; color: #e1f5ee;
   display: flex; flex-direction: column; padding: 18px 14px;
   position: sticky; top: 0; height: 100vh; overflow: hidden; transition: width 0.2s ease;
+  z-index: 40; /* above the topbar (z-10) so collapsed hover flyouts float over the content */
 }
 .sidebar__brand {
   display: flex; align-items: center; gap: 9px; padding: 0 8px 18px; margin-bottom: 8px;

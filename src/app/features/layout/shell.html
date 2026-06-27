@@ -23,7 +23,7 @@
               routerLinkActive="is-active"
               [routerLinkActiveOptions]="{ exact: !!node.exact }"
               (click)="closeMobile()"
-              [attr.title]="node.label">
+              [attr.aria-label]="node.label">
               <svg class="sb-ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
                 <path fill="currentColor" [attr.d]="iconPath(node.icon)" />
               </svg>
@@ -39,7 +39,7 @@
               class="nav-row nav-row--parent"
               (click)="toggleNode(node.label)"
               [attr.aria-expanded]="isExpanded(node.label)"
-              [attr.title]="node.label">
+              [attr.aria-label]="node.label">
               <svg class="sb-ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
                 <path fill="currentColor" [attr.d]="iconPath(node.icon)" />
               </svg>
