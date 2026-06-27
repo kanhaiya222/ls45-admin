@@ -1,7 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { ReportService } from '../../core/report.service';
+
+interface Crumb {
+  readonly label: string;
+  readonly url: string;
+  readonly link: boolean;
+}
 
 interface NavItem {
   readonly label: string;
@@ -19,6 +26,18 @@ interface NavGroup {
 
 const COLLAPSE_KEY = 'ls45admin.sidebar.collapsed';
 const MOBILE_QUERY = '(max-width: 860px)';
+
+/** Friendly labels for URL segments used in the breadcrumb + page title. */
+const SEGMENT_LABELS: Record<string, string> = {
+  packages: 'Packages', bookings: 'Bookings', reports: 'Reports', taxonomy: 'Taxonomy',
+  content: 'Content', pages: 'Pages', blog: 'Blog', categories: 'Categories',
+  departures: 'Departures', manifest: 'Manifest', new: 'New', edit: 'Edit',
+};
+
+/** Top-level routes that actually exist — only these breadcrumb segments are clickable. */
+const NAVIGABLE_ROUTES = new Set([
+  '/packages', '/bookings', '/reports', '/taxonomy', '/content/pages', '/content/blog',
+]);
 
 /** Inline icon path data (24x24) keyed by name — avoids an icon-font dependency. */
 const ICONS: Record<string, string> = {
@@ -58,6 +77,9 @@ export class ShellComponent {
   /** Live counts surfaced as nav badges (best-effort; silently empty if the report fails). */
   readonly badges = signal<Record<string, number>>({});
 
+  readonly crumbs = signal<Crumb[]>([{ label: 'Dashboard', url: '/', link: false }]);
+  readonly pageTitle = computed(() => this.crumbs().at(-1)?.label ?? 'Dashboard');
+
   constructor() {
     this.reports.getBookingStats().subscribe({
       next: (s) => this.badges.set({ bookings: s.pendingBookings }),
@@ -65,6 +87,32 @@ export class ShellComponent {
         /* badge is optional — leave it empty */
       },
     });
+
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe(() => this.buildCrumbs());
+    this.buildCrumbs();
+  }
+
+  /** Derive a Dashboard → … → current breadcrumb trail from the active URL. */
+  private buildCrumbs(): void {
+    const path = this.router.url.split(/[?#]/)[0];
+    const segments = path.split('/').filter(Boolean);
+    const crumbs: Crumb[] = [{ label: 'Dashboard', url: '/', link: segments.length > 0 }];
+    let acc = '';
+    for (const seg of segments) {
+      acc += `/${seg}`;
+      const isId = /^\d+$/.test(seg) || seg.length > 24 || /[0-9a-f]{8}-[0-9a-f]{4}/.test(seg);
+      if (isId) {
+        continue;
+      }
+      crumbs.push({
+        label: SEGMENT_LABELS[seg] ?? seg.charAt(0).toUpperCase() + seg.slice(1),
+        url: acc,
+        link: NAVIGABLE_ROUTES.has(acc),
+      });
+    }
+    this.crumbs.set(crumbs);
   }
 
   readonly groups: readonly NavGroup[] = [

@@ -36,6 +36,20 @@
       <button class="iconbtn topbar__burger" type="button" (click)="onMenuToggle()" aria-label="Toggle navigation">
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
       </button>
+      <nav class="topbar__crumbs" aria-label="Breadcrumb">
+        @for (c of crumbs(); track c.url; let last = $last) {
+          @if (last) {
+            <span class="cur" aria-current="page">{{ c.label }}</span>
+          } @else {
+            @if (c.link) {
+              <a [routerLink]="c.url">{{ c.label }}</a>
+            } @else {
+              <span>{{ c.label }}</span>
+            }
+            <span class="sep" aria-hidden="true">›</span>
+          }
+        }
+      </nav>
       <div class="topbar__spacer"></div>
       @if (user(); as u) {
         <span class="topbar__user">{{ u.firstName }} {{ u.lastName }}</span>

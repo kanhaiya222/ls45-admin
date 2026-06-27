@@ -66,6 +66,16 @@
   transition: background 0.15s;
 }
 .iconbtn:hover { background: var(--gray-100); }
+.topbar__crumbs { display: flex; align-items: center; gap: 7px; min-width: 0; overflow: hidden; }
+.topbar__crumbs a,
+.topbar__crumbs > span:not(.cur):not(.sep) { font-size: 13px; color: var(--gray-500); white-space: nowrap; }
+.topbar__crumbs a { color: var(--teal-700); font-weight: 500; }
+.topbar__crumbs a:hover { color: var(--teal-500); }
+.topbar__crumbs .sep { color: var(--gray-300); }
+.topbar__crumbs .cur {
+  font-family: var(--font-serif); font-size: 18px; color: var(--teal-900);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 .topbar__spacer { flex: 1; }
 .topbar__user { font-size: 14px; font-weight: 500; color: var(--gray-700); }
 .content { flex: 1; padding: 28px; }
