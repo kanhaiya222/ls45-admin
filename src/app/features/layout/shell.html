@@ -13,24 +13,71 @@
     </div>
 
     <nav class="sidebar__nav">
-      @for (g of visibleGroups(); track g.label) {
-        <p class="sb-section">{{ g.label }}</p>
-        @for (it of g.items; track it.route) {
-          <a
-            [routerLink]="it.route"
-            routerLinkActive="is-active"
-            [routerLinkActiveOptions]="{ exact: !!it.exact }"
-            (click)="closeMobile()"
-            [attr.title]="it.label">
-            <svg class="sb-ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-              <path fill="currentColor" [attr.d]="iconPath(it.icon)" />
-            </svg>
-            <span class="sb-label">{{ it.label }}</span>
-            @if (badgeCount(it); as n) {
-              <span class="sb-badge" [attr.aria-label]="n + ' ' + it.label">{{ n }}</span>
+      @for (node of visibleNav(); track node.label) {
+        <div class="nav-node" [class.is-open]="isExpanded(node.label)">
+          @if (node.route) {
+            <!-- direct top-level link -->
+            <a
+              class="nav-row"
+              [routerLink]="node.route"
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{ exact: !!node.exact }"
+              (click)="closeMobile()"
+              [attr.title]="node.label">
+              <svg class="sb-ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <path fill="currentColor" [attr.d]="iconPath(node.icon)" />
+              </svg>
+              <span class="sb-label">{{ node.label }}</span>
+              @if (badgeCount(node); as n) {
+                <span class="sb-badge" [attr.aria-label]="n + ' ' + node.label">{{ n }}</span>
+              }
+            </a>
+          } @else {
+            <!-- parent menu (expand/collapse) -->
+            <button
+              type="button"
+              class="nav-row nav-row--parent"
+              (click)="toggleNode(node.label)"
+              [attr.aria-expanded]="isExpanded(node.label)"
+              [attr.title]="node.label">
+              <svg class="sb-ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <path fill="currentColor" [attr.d]="iconPath(node.icon)" />
+              </svg>
+              <span class="sb-label">{{ node.label }}</span>
+              <svg class="sb-chevron" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                <path fill="currentColor" d="M8.1 9.3 12 13.2l3.9-3.9 1.4 1.4L12 16 6.7 10.7z" />
+              </svg>
+            </button>
+            <div class="nav-children">
+              @for (c of node.children; track c.route) {
+                <a
+                  class="nav-child"
+                  [routerLink]="c.route"
+                  routerLinkActive="is-active"
+                  (click)="closeMobile()">
+                  <span class="sb-label">{{ c.label }}</span>
+                  @if (badgeCount(c); as n) {
+                    <span class="sb-badge" [attr.aria-label]="n + ' ' + c.label">{{ n }}</span>
+                  }
+                </a>
+              }
+            </div>
+          }
+
+          <!-- collapsed-rail hover flyout: parent title + child links (or just the label for a direct link) -->
+          <div class="nav-flyout">
+            <span class="nav-flyout__title">{{ node.label }}</span>
+            @if (node.children) {
+              @for (c of node.children; track c.route) {
+                <a
+                  class="nav-flyout__link"
+                  [routerLink]="c.route"
+                  routerLinkActive="is-active"
+                  (click)="closeMobile()">{{ c.label }}</a>
+              }
             }
-          </a>
-        }
+          </div>
+        </div>
       }
     </nav>
   </aside>

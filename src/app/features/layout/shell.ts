@@ -16,24 +16,28 @@ interface Crumb {
   readonly link: boolean;
 }
 
-interface NavItem {
-  readonly label: string;
-  readonly route: string;
-  readonly icon: string;
-  readonly exact?: boolean;
-  /** Key into the live `badges` map for a count chip (e.g. pending bookings). */
-  readonly badgeKey?: string;
-  /** Permission (RESOURCE:ACTION:SCOPE) required to see this item; admins bypass. */
+/** Visibility gating shared by nav nodes + children (admins bypass perms). */
+interface NavGate {
   readonly perm?: string;
-  /** Visible only to TENANT_ADMIN / SUPER_ADMIN (sensitive admin functions). */
   readonly adminOnly?: boolean;
-  /** Visible only to SUPER_ADMIN (e.g. Module Access). */
   readonly superOnly?: boolean;
 }
 
-interface NavGroup {
+/** A child link under a parent menu. */
+interface NavLeaf extends NavGate {
   readonly label: string;
-  readonly items: readonly NavItem[];
+  readonly route: string;
+  readonly badgeKey?: string;
+}
+
+/** A top-level nav node — either a direct link (has `route`) or a parent (has `children`). */
+interface NavNode extends NavGate {
+  readonly label: string;
+  readonly icon: string;
+  readonly route?: string;
+  readonly exact?: boolean;
+  readonly badgeKey?: string;
+  readonly children?: readonly NavLeaf[];
 }
 
 const COLLAPSE_KEY = 'ls45admin.sidebar.collapsed';
@@ -152,49 +156,67 @@ export class ShellComponent {
     this.crumbs.set(crumbs);
   }
 
-  private readonly allGroups: readonly NavGroup[] = [
-    { label: 'Overview', items: [{ label: 'Dashboard', route: '/', icon: 'dashboard', exact: true }] },
+  /** Parent → child nav tree. Top-level nodes are direct links or expandable parents. */
+  private readonly navTree: readonly NavNode[] = [
+    { label: 'Dashboard', icon: 'dashboard', route: '/', exact: true },
     {
-      label: 'Catalogue',
-      items: [
-        { label: 'Packages', route: '/packages', icon: 'packages', perm: 'package:read:all' },
-        { label: 'Taxonomy', route: '/taxonomy', icon: 'taxonomy', perm: 'package:read:all' },
+      label: 'Catalogue', icon: 'packages', children: [
+        { label: 'Packages', route: '/packages', perm: 'package:read:all' },
+        { label: 'Taxonomy', route: '/taxonomy', perm: 'package:read:all' },
       ],
     },
+    { label: 'Bookings', icon: 'bookings', route: '/bookings', badgeKey: 'bookings', perm: 'booking:read:all' },
     {
-      label: 'Operations',
-      items: [
-        { label: 'Bookings', route: '/bookings', icon: 'bookings', badgeKey: 'bookings', perm: 'booking:read:all' },
+      label: 'Content', icon: 'pages', children: [
+        { label: 'Pages', route: '/content/pages', perm: 'content:read:all' },
+        { label: 'Blog', route: '/content/blog', perm: 'content:read:all' },
       ],
     },
+    { label: 'Reports', icon: 'reports', route: '/reports', perm: 'report:read:all' },
     {
-      label: 'Content',
-      items: [
-        { label: 'Pages', route: '/content/pages', icon: 'pages', perm: 'content:read:all' },
-        { label: 'Blog', route: '/content/blog', icon: 'blog', perm: 'content:read:all' },
-      ],
-    },
-    { label: 'Insights', items: [{ label: 'Reports', route: '/reports', icon: 'reports', perm: 'report:read:all' }] },
-    {
-      label: 'Team & Access',
-      items: [
-        { label: 'Customers', route: '/customers', icon: 'customers', perm: 'user:read:all' },
-        { label: 'Team', route: '/team/users', icon: 'team', adminOnly: true },
-        { label: 'Roles', route: '/team/roles', icon: 'roles', adminOnly: true },
-        { label: 'Module Access', route: '/team/module-access', icon: 'access', superOnly: true },
-        { label: 'Settings', route: '/settings', icon: 'settings', adminOnly: true },
+      label: 'Team & Access', icon: 'team', children: [
+        { label: 'Customers', route: '/customers', perm: 'user:read:all' },
+        { label: 'Team', route: '/team/users', adminOnly: true },
+        { label: 'Roles', route: '/team/roles', adminOnly: true },
+        { label: 'Module Access', route: '/team/module-access', superOnly: true },
+        { label: 'Settings', route: '/settings', adminOnly: true },
       ],
     },
   ];
 
-  /** Nav filtered to what the signed-in user may see (by permission / admin level). */
-  readonly visibleGroups = computed<readonly NavGroup[]>(() =>
-    this.allGroups
-      .map((g) => ({ label: g.label, items: g.items.filter((it) => this.canShow(it)) }))
-      .filter((g) => g.items.length > 0),
+  /** Which parent menus are expanded (all open by default). */
+  readonly expanded = signal<Set<string>>(new Set(['Catalogue', 'Content', 'Team & Access']));
+
+  /** Nav filtered to what the signed-in user may see; parents drop when no child is visible. */
+  readonly visibleNav = computed<NavNode[]>(() =>
+    this.navTree
+      .map((node) => {
+        if (node.children) {
+          const children = node.children.filter((c) => this.canShow(c));
+          return children.length ? { ...node, children } : null;
+        }
+        return this.canShow(node) ? node : null;
+      })
+      .filter((n): n is NavNode => n !== null),
   );
 
-  private canShow(it: NavItem): boolean {
+  isExpanded(label: string): boolean {
+    return this.expanded().has(label);
+  }
+
+  toggleNode(label: string): void {
+    this.expanded.update((s) => {
+      const next = new Set(s);
+      if (next.has(label)) {
+        next.delete(label);
+      } else {
+        next.add(label);
+      }
+      return next;
+    });
+  }
+
+  private canShow(it: NavGate): boolean {
     if (it.superOnly) {
       return this.auth.isSuperAdmin();
     }
@@ -208,7 +230,7 @@ export class ShellComponent {
     return ICONS[key] ?? '';
   }
 
-  badgeCount(item: NavItem): number {
+  badgeCount(item: { readonly badgeKey?: string }): number {
     return item.badgeKey ? this.badges()[item.badgeKey] ?? 0 : 0;
   }
 

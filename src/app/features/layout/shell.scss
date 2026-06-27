@@ -36,38 +36,77 @@
   border: 2px solid transparent; background-clip: padding-box;
 }
 .sidebar__nav:hover::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); background-clip: padding-box; }
-.sb-section {
-  font-size: 10px; text-transform: uppercase; letter-spacing: 0.09em;
-  color: rgba(255, 255, 255, 0.38); padding: 14px 12px 5px; white-space: nowrap;
-}
-.sidebar__nav a {
-  display: flex; align-items: center; gap: 11px; font-size: 14px; font-weight: 500;
+/* ---- nav nodes: rows (links + parent buttons) + children ---- */
+.nav-node { position: relative; }
+
+.nav-row {
+  display: flex; align-items: center; gap: 11px; width: 100%;
+  font-family: var(--font-sans); font-size: 14px; font-weight: 500; text-align: left;
   color: #9fe1cb; padding: 10px 12px; border-radius: var(--radius-md);
+  white-space: nowrap; border: none; background: none; cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.nav-row:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+.nav-row.is-active { background: var(--teal-700); color: #fff; }
+.sb-ic { flex-shrink: 0; opacity: 0.8; transition: opacity 0.15s; }
+.nav-row:hover .sb-ic,
+.nav-row.is-active .sb-ic { opacity: 1; }
+
+.sb-chevron { margin-left: auto; flex-shrink: 0; opacity: 0.5; transition: transform 0.18s ease; }
+.nav-node.is-open .sb-chevron { transform: rotate(180deg); }
+
+/* children — shown when the parent is expanded */
+.nav-children { display: none; padding: 2px 0 4px; }
+.nav-node.is-open .nav-children { display: block; }
+.nav-child {
+  display: flex; align-items: center; font-size: 13.5px; color: #9fe1cb;
+  padding: 8px 12px 8px 42px; border-radius: var(--radius-md); position: relative;
   white-space: nowrap; transition: background 0.15s, color 0.15s;
 }
-.sidebar__nav a:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
-.sidebar__nav a.is-active { background: var(--teal-700); color: #fff; }
-.sb-ic { flex-shrink: 0; opacity: 0.8; transition: opacity 0.15s; }
-.sidebar__nav a:hover .sb-ic,
-.sidebar__nav a.is-active .sb-ic { opacity: 1; }
+.nav-child::before {
+  content: ''; position: absolute; left: 24px; top: 3px; bottom: 3px; width: 1.5px;
+  background: rgba(255, 255, 255, 0.12); border-radius: 2px;
+}
+.nav-child:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+.nav-child.is-active { background: var(--teal-700); color: #fff; }
+.nav-child.is-active::before { background: var(--teal-300); }
+
 .sb-badge {
   margin-left: auto; background: var(--coral-400); color: #fff; font-size: 10px; font-weight: 700;
   line-height: 1; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
   display: inline-flex; align-items: center; justify-content: center;
 }
 
-/* ---- collapsed icon rail (desktop) ---- */
-.shell.is-collapsed .sidebar { width: 68px; padding: 18px 10px; }
-.shell.is-collapsed .sidebar__name { display: none; }
-.shell.is-collapsed .sb-label { display: none; }
-.shell.is-collapsed .sidebar__brand { justify-content: center; padding: 0 0 18px; }
-.shell.is-collapsed .sidebar__nav a { justify-content: center; padding: 11px 0; }
-.shell.is-collapsed .sb-section {
-  height: 1px; padding: 0; margin: 9px 10px; overflow: hidden; color: transparent;
-  background: rgba(255, 255, 255, 0.1);
+/* ---- hover flyout (only used in the collapsed rail) ---- */
+.nav-flyout {
+  display: none; position: absolute; left: calc(100% + 8px); top: -2px; z-index: 70;
+  min-width: 188px; background: #06463a; border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md); padding: 8px; box-shadow: 0 18px 44px -16px rgba(0, 0, 0, 0.55);
 }
-.shell.is-collapsed .sidebar__nav a { position: relative; }
-.shell.is-collapsed .sb-badge {
+.nav-flyout::before { /* invisible bridge so the cursor can cross the gap without losing :hover */
+  content: ''; position: absolute; left: -10px; top: 0; bottom: 0; width: 12px;
+}
+.nav-flyout__title {
+  display: block; font-size: 12px; font-weight: 600; color: #fff; padding: 3px 8px 7px; white-space: nowrap;
+}
+.nav-flyout__link {
+  display: block; font-size: 13px; color: #9fe1cb; padding: 7px 8px; border-radius: var(--radius-sm);
+  white-space: nowrap; transition: background 0.12s, color 0.12s;
+}
+.nav-flyout__link:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+.nav-flyout__link.is-active { background: var(--teal-700); color: #fff; }
+
+/* ---- collapsed icon rail (desktop): icons only + hover flyouts ---- */
+.shell.is-collapsed .sidebar { width: 68px; padding: 18px 10px; overflow: visible; }
+.shell.is-collapsed .sidebar__nav { overflow: visible; padding-right: 0; }
+.shell.is-collapsed .sidebar__name { display: none; }
+.shell.is-collapsed .sb-label,
+.shell.is-collapsed .sb-chevron,
+.shell.is-collapsed .nav-children { display: none; }
+.shell.is-collapsed .sidebar__brand { justify-content: center; padding: 0 0 18px; }
+.shell.is-collapsed .nav-row { justify-content: center; padding: 11px 0; }
+.shell.is-collapsed .nav-node:hover > .nav-flyout { display: block; }
+.shell.is-collapsed .nav-row .sb-badge {
   position: absolute; top: 7px; right: 13px; min-width: 9px; width: 9px; height: 9px;
   padding: 0; font-size: 0; border: 2px solid #04342c;
 }
@@ -149,18 +188,18 @@
   }
   .shell.is-mobile-open .sidebar { transform: translateX(0); }
 
-  /* the drawer always shows full labels on mobile, regardless of desktop collapse state */
-  .shell.is-collapsed .sidebar { width: 248px; padding: 18px 14px; }
+  /* the drawer always shows the full parent/child menu on mobile, regardless of desktop collapse state */
+  .shell.is-collapsed .sidebar { width: 248px; padding: 18px 14px; overflow: hidden; }
+  .shell.is-collapsed .sidebar__nav { overflow-y: auto; padding-right: 4px; }
   .shell.is-collapsed .sidebar__name,
-  .shell.is-collapsed .sb-label { display: inline; }
+  .shell.is-collapsed .sb-label,
+  .shell.is-collapsed .sb-chevron { display: inline; }
+  .shell.is-collapsed .sb-chevron { margin-left: auto; }
   .shell.is-collapsed .sidebar__brand { justify-content: flex-start; padding: 0 8px 18px; }
-  .shell.is-collapsed .sidebar__nav a { justify-content: flex-start; padding: 10px 12px; }
-  .shell.is-collapsed .sb-section {
-    height: auto; padding: 14px 12px 5px; margin: 0; overflow: visible;
-    color: rgba(255, 255, 255, 0.38); background: none;
-  }
-  .shell.is-collapsed .sidebar__nav a { position: static; }
-  .shell.is-collapsed .sb-badge {
+  .shell.is-collapsed .nav-row { justify-content: flex-start; padding: 10px 12px; }
+  .shell.is-collapsed .nav-node.is-open .nav-children { display: block; }
+  .shell.is-collapsed .nav-flyout { display: none !important; }   /* drawer uses inline children, not flyouts */
+  .shell.is-collapsed .nav-row .sb-badge {
     position: static; min-width: 18px; width: auto; height: 18px; padding: 0 5px; font-size: 10px; border: none;
   }
 
