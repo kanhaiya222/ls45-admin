@@ -5,6 +5,8 @@ import { AuthService } from '../../core/auth/auth.service';
 import { ReportService } from '../../core/report.service';
 import { ToastContainerComponent } from '../../shared/toast/toast-container';
 import { ConfirmDialogComponent } from '../../shared/confirm/confirm-dialog';
+import { QuickFindComponent } from '../../shared/quick-find/quick-find';
+import { QuickFindService } from '../../core/quick-find.service';
 
 interface Crumb {
   readonly label: string;
@@ -61,7 +63,14 @@ const ICONS: Record<string, string> = {
  */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ToastContainerComponent, ConfirmDialogComponent],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    ToastContainerComponent,
+    ConfirmDialogComponent,
+    QuickFindComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
@@ -70,6 +79,7 @@ export class ShellComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly reports = inject(ReportService);
+  protected readonly quickFind = inject(QuickFindService);
 
   readonly user = this.auth.user;
 

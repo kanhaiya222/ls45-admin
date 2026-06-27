@@ -1,0 +1,35 @@
+@if (isOpen()) {
+  <div class="qf">
+    <div class="qf__backdrop" (click)="close()"></div>
+    <div class="qf__panel" role="dialog" aria-modal="true" aria-label="Quick find">
+      <div class="qf__search">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 015.3 14l5.4 5.3-1.4 1.4-5.3-5.4A8 8 0 1110 2zm0 2a6 6 0 100 12 6 6 0 000-12z"/></svg>
+        <input
+          #qfInput
+          type="text"
+          [value]="query()"
+          (input)="onInput($any($event.target).value)"
+          placeholder="Search pages and packages…"
+          aria-label="Quick find" />
+        <kbd>esc</kbd>
+      </div>
+      <ul class="qf__results">
+        @for (r of results(); track r.route; let i = $index) {
+          <li>
+            <button
+              type="button"
+              class="qf__item"
+              [class.is-active]="active() === i"
+              (mouseenter)="setActive(i)"
+              (click)="go(r)">
+              <span class="qf__label">{{ r.label }}</span>
+              <span class="qf__hint">{{ r.hint }}</span>
+            </button>
+          </li>
+        } @empty {
+          <li class="qf__empty">No matches</li>
+        }
+      </ul>
+    </div>
+  </div>
+}

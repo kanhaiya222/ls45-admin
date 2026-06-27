@@ -51,6 +51,11 @@
         }
       </nav>
       <div class="topbar__spacer"></div>
+      <button class="qf-trigger" type="button" (click)="quickFind.open()" aria-label="Quick find (Ctrl/Cmd K)">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 015.3 14l5.4 5.3-1.4 1.4-5.3-5.4A8 8 0 1110 2zm0 2a6 6 0 100 12 6 6 0 000-12z"/></svg>
+        <span class="qf-trigger__text">Search</span>
+        <kbd>⌘K</kbd>
+      </button>
       @if (user(); as u) {
         <div class="usermenu">
           <button
@@ -90,4 +95,5 @@
 
   <app-toast-container />
   <app-confirm-dialog />
+  <app-quick-find />
 </div>
