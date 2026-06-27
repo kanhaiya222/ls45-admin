@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { BrandDatePipe } from '../../core/brand-date.pipe';
 import { AdminUser } from '../../core/models';
 import { UserAdminService } from '../../core/user-admin.service';
 import { ToastService } from '../../core/toast.service';
@@ -13,7 +13,7 @@ import { ListStateComponent } from '../../shared/list-state/list-state';
  */
 @Component({
   selector: 'app-customers',
-  imports: [DatePipe, ListStateComponent],
+  imports: [BrandDatePipe, ListStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './customers.html',
   styleUrl: './customers.scss',

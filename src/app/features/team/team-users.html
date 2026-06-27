@@ -120,7 +120,7 @@
               </div>
             </td>
             <td><span class="status" [class]="statusClass(u.status)">{{ label(u.status) }}</span></td>
-            <td class="muted">{{ u.lastLoginAt ? (u.lastLoginAt | date: 'd MMM y') : '—' }}</td>
+            <td class="muted">{{ u.lastLoginAt ? (u.lastLoginAt | brandDate) : '—' }}</td>
             <td class="tbl__actions">
               @if (u.status === 'SUSPENDED') {
                 <button class="btn-mini" type="button" (click)="setStatus(u, false)">Reactivate</button>

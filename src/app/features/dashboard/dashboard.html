@@ -57,7 +57,7 @@
         @for (d of departures(); track d.publicId) {
           <div class="fill">
             <div class="fill__name">{{ d.packageName }}</div>
-            <div class="fill__meta">{{ d.startDate | date: 'd MMM' }} – {{ d.endDate | date: 'd MMM yyyy' }}</div>
+            <div class="fill__meta">{{ d.startDate | brandDate: 'd MMM' }} – {{ d.endDate | brandDate: 'd MMM yyyy' }}</div>
             <div class="fill__counts">
               <span>{{ d.booked }} / {{ d.capacity }} booked</span>
               <span class="fill__left" [class.fill__left--low]="d.seatsLeft <= 3">{{ d.seatsLeft }} left</span>

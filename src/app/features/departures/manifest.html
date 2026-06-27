@@ -38,12 +38,12 @@
                 <div>{{ p.email || '—' }}</div>
                 <div class="sub">{{ p.phone || '' }}</div>
               </td>
-              <td>{{ p.dateOfBirth ? (p.dateOfBirth | date: 'mediumDate') : '—' }}</td>
+              <td>{{ p.dateOfBirth ? (p.dateOfBirth | brandDate) : '—' }}</td>
               <td>{{ p.nationality || '—' }}</td>
               <td>
                 {{ p.passportNumber || '—' }}
                 @if (p.passportExpiry) {
-                  <span class="sub">exp {{ p.passportExpiry | date: 'mediumDate' }}</span>
+                  <span class="sub">exp {{ p.passportExpiry | brandDate }}</span>
                 }
               </td>
               <td>{{ p.dietaryPreferences || '—' }}</td>
@@ -76,8 +76,8 @@
               <td>{{ w.occupancyType }}</td>
               <td>{{ w.numTravellers }}</td>
               <td><span class="status">{{ w.status }}</span></td>
-              <td>{{ w.createdAt | date: 'mediumDate' }}</td>
-              <td>{{ w.notifiedAt ? (w.notifiedAt | date: 'medium') : '—' }}</td>
+              <td>{{ w.createdAt | brandDate }}</td>
+              <td>{{ w.notifiedAt ? (w.notifiedAt | brandDate: 'medium') : '—' }}</td>
             </tr>
           }
         </tbody>

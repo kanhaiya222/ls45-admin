@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { BrandDatePipe } from '../../core/brand-date.pipe';
 import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { CmsAdminService } from '../../core/cms-admin.service';
@@ -8,7 +8,7 @@ import { ListStateComponent } from '../../shared/list-state/list-state';
 
 @Component({
   selector: 'app-admin-cms-list',
-  imports: [DatePipe, RouterLink, ListStateComponent],
+  imports: [BrandDatePipe, RouterLink, ListStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './cms-list.html',
   styleUrl: './cms-list.scss',

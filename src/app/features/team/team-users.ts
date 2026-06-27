@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { BrandDatePipe } from '../../core/brand-date.pipe';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AdminUser, CreateStaffUserPayload, Role } from '../../core/models';
 import { UserAdminService } from '../../core/user-admin.service';
@@ -16,7 +16,7 @@ import { ListStateComponent } from '../../shared/list-state/list-state';
  */
 @Component({
   selector: 'app-team-users',
-  imports: [DatePipe, ReactiveFormsModule, ListStateComponent],
+  imports: [BrandDatePipe, ReactiveFormsModule, ListStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './team-users.html',
   styleUrl: './team-users.scss',

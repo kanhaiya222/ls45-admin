@@ -42,7 +42,7 @@
             </td>
             <td>{{ p.categoryName || '—' }}</td>
             <td><span class="status" [class]="statusClass(p.status)">{{ p.status }}</span></td>
-            <td>{{ p.publishedAt ? (p.publishedAt | date: 'mediumDate') : '—' }}</td>
+            <td>{{ p.publishedAt ? (p.publishedAt | brandDate) : '—' }}</td>
             <td class="tbl__actions">
               <a class="btn-mini" [routerLink]="['/content/blog', p.publicId, 'edit']">Edit</a>
               @if (p.status !== 'PUBLISHED') {

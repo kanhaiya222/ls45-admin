@@ -33,7 +33,7 @@
             <td>{{ label(b.occupancyType) }}</td>
             <td>{{ b.numTravellers }}</td>
             <td>{{ b.totalPrice | brandPrice }}</td>
-            <td>{{ b.createdAt | date: 'mediumDate' }}</td>
+            <td>{{ b.createdAt | brandDate }}</td>
             <td class="tbl__actions">
               <button class="btn-mini" type="button" (click)="togglePayments(b)">
                 {{ expandedId() === b.publicId ? 'Hide' : 'Payments' }}
@@ -63,7 +63,7 @@
                           <td><span class="status" [class]="statusClass(p.status)">{{ label(p.status) }}</span></td>
                           <td>{{ p.gateway || '—' }}</td>
                           <td class="mono">{{ p.gatewayReference || '—' }}</td>
-                          <td>{{ (p.capturedAt || p.createdAt) | date: 'medium' }}</td>
+                          <td>{{ (p.capturedAt || p.createdAt) | brandDate: 'medium' }}</td>
                         </tr>
                         @if (p.refundAmount) {
                           <tr class="refund">
@@ -71,7 +71,7 @@
                             <td>Refunded</td>
                             <td>—</td>
                             <td>—</td>
-                            <td>{{ p.refundedAt | date: 'medium' }}</td>
+                            <td>{{ p.refundedAt | brandDate: 'medium' }}</td>
                           </tr>
                         }
                       }

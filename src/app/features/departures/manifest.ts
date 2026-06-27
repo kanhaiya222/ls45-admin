@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { BrandDatePipe } from '../../core/brand-date.pipe';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DepartureAdminService } from '../../core/departure-admin.service';
 import { ManifestPassenger, WaitlistEntry } from '../../core/models';
 
 @Component({
   selector: 'app-admin-manifest',
-  imports: [DatePipe, RouterLink],
+  imports: [BrandDatePipe, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './manifest.html',
   styleUrl: './manifest.scss',

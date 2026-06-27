@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { BrandDatePipe } from '../../core/brand-date.pipe';
 import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { BlogAdminService } from '../../core/blog-admin.service';
@@ -8,7 +8,7 @@ import { ListStateComponent } from '../../shared/list-state/list-state';
 
 @Component({
   selector: 'app-admin-blog-list',
-  imports: [DatePipe, RouterLink, ListStateComponent],
+  imports: [BrandDatePipe, RouterLink, ListStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './blog-list.html',
   styleUrl: './blog-list.scss',

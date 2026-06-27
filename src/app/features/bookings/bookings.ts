@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { BrandDatePipe } from '../../core/brand-date.pipe';
 import { BrandPricePipe } from '../../core/brand-price.pipe';
-import { DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BookingAdminService } from '../../core/booking-admin.service';
 import { Booking, PaymentRecord } from '../../core/models';
@@ -9,7 +9,7 @@ import { ToastService } from '../../core/toast.service';
 
 @Component({
   selector: 'app-admin-bookings',
-  imports: [DatePipe, BrandPricePipe, ReactiveFormsModule, ListStateComponent],
+  imports: [BrandDatePipe, BrandPricePipe, ReactiveFormsModule, ListStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './bookings.html',
   styleUrl: './bookings.scss',

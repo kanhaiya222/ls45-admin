@@ -34,7 +34,7 @@
             <td class="tbl__title">{{ p.title }}</td>
             <td class="mono">/{{ p.slug }}</td>
             <td><span class="status" [class]="statusClass(p.status)">{{ p.status }}</span></td>
-            <td>{{ p.updatedAt | date: 'mediumDate' }}</td>
+            <td>{{ p.updatedAt | brandDate }}</td>
             <td class="tbl__actions">
               <a class="btn-mini" [routerLink]="['/content/pages', p.publicId, 'edit']">Edit</a>
               @if (p.status !== 'PUBLISHED') {

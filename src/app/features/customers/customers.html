@@ -44,7 +44,7 @@
               @if (u.phone) { <span class="tbl__phone">{{ u.phone }}</span> }
             </td>
             <td><span class="status" [class]="statusClass(u.status)">{{ label(u.status) }}</span></td>
-            <td class="muted">{{ u.createdAt ? (u.createdAt | date: 'd MMM y') : '—' }}</td>
+            <td class="muted">{{ u.createdAt ? (u.createdAt | brandDate) : '—' }}</td>
             <td class="tbl__actions">
               @if (u.status === 'SUSPENDED') {
                 <button class="btn-mini" type="button" (click)="setStatus(u, false)">Reactivate</button>
