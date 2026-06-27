@@ -4,6 +4,8 @@ import { RouterLink } from '@angular/router';
 import { PackageAdminService } from '../../core/package-admin.service';
 import { PackageListItem } from '../../core/models';
 import { ListStateComponent } from '../../shared/list-state/list-state';
+import { ToastService } from '../../core/toast.service';
+import { ConfirmService } from '../../core/confirm.service';
 
 @Component({
   selector: 'app-admin-package-list',
@@ -14,6 +16,8 @@ import { ListStateComponent } from '../../shared/list-state/list-state';
 })
 export class PackageListPage {
   private readonly packagesApi = inject(PackageAdminService);
+  private readonly toast = inject(ToastService);
+  private readonly confirm = inject(ConfirmService);
 
   readonly statuses = ['ALL', 'DRAFT', 'REVIEW', 'PUBLISHED', 'ARCHIVED'];
   readonly activeStatus = signal('ALL');
@@ -75,19 +79,40 @@ export class PackageListPage {
     }
     this.actingId.set(pkg.publicId);
     this.packagesApi.publish(pkg.publicId).subscribe({
-      next: () => this.afterAction(),
-      error: () => this.actingId.set(null),
+      next: () => {
+        this.toast.success(`${pkg.name} published`);
+        this.afterAction();
+      },
+      error: () => {
+        this.toast.error('Could not publish the package');
+        this.actingId.set(null);
+      },
     });
   }
 
-  archive(pkg: PackageListItem): void {
+  async archive(pkg: PackageListItem): Promise<void> {
     if (this.actingId()) {
+      return;
+    }
+    const ok = await this.confirm.ask({
+      title: 'Archive this package?',
+      message: `${pkg.name} will be hidden from the catalogue. You can republish it later.`,
+      confirmText: 'Archive',
+      danger: true,
+    });
+    if (!ok) {
       return;
     }
     this.actingId.set(pkg.publicId);
     this.packagesApi.archive(pkg.publicId).subscribe({
-      next: () => this.afterAction(),
-      error: () => this.actingId.set(null),
+      next: () => {
+        this.toast.success(`${pkg.name} archived`);
+        this.afterAction();
+      },
+      error: () => {
+        this.toast.error('Could not archive the package');
+        this.actingId.set(null);
+      },
     });
   }
 

@@ -1,0 +1,21 @@
+.cd { position: fixed; inset: 0; z-index: 300; display: grid; place-items: center; padding: 20px; }
+.cd__backdrop { position: absolute; inset: 0; background: rgba(4, 52, 44, .45); animation: cd-fade .15s ease; }
+.cd__card {
+  position: relative; width: 100%; max-width: 420px; background: var(--white);
+  border-radius: var(--radius-lg); padding: 26px; box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .5);
+  animation: cd-pop .18s ease both;
+}
+.cd__title { font-family: var(--font-serif); font-weight: 400; font-size: 22px; color: var(--teal-900); margin-bottom: 8px; }
+.cd__msg { font-size: 14px; line-height: 1.6; color: var(--gray-700); margin-bottom: 22px; }
+.cd__actions { display: flex; justify-content: flex-end; gap: 10px; }
+.cd__confirm {
+  display: inline-flex; align-items: center; padding: 11px 22px; border: none; border-radius: var(--radius-md);
+  background: var(--teal-800); color: #fff; font-family: var(--font-sans); font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: background .15s;
+}
+.cd__confirm:hover { background: var(--teal-700); }
+.cd__confirm--danger { background: var(--coral-400); }
+.cd__confirm--danger:hover { background: var(--coral-600); }
+
+@keyframes cd-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cd-pop { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }

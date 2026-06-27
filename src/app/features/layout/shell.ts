@@ -3,6 +3,8 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } fro
 import { filter } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { ReportService } from '../../core/report.service';
+import { ToastContainerComponent } from '../../shared/toast/toast-container';
+import { ConfirmDialogComponent } from '../../shared/confirm/confirm-dialog';
 
 interface Crumb {
   readonly label: string;
@@ -59,7 +61,7 @@ const ICONS: Record<string, string> = {
  */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ToastContainerComponent, ConfirmDialogComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './shell.html',
   styleUrl: './shell.scss',

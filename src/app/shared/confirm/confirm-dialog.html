@@ -1,0 +1,15 @@
+@if (pending(); as p) {
+  <div class="cd" role="dialog" aria-modal="true" aria-labelledby="cd-title">
+    <div class="cd__backdrop" (click)="respond(false)"></div>
+    <div class="cd__card">
+      <h2 class="cd__title" id="cd-title">{{ p.title }}</h2>
+      @if (p.message) { <p class="cd__msg">{{ p.message }}</p> }
+      <div class="cd__actions">
+        <button class="btn-outline" type="button" (click)="respond(false)">{{ p.cancelText || 'Cancel' }}</button>
+        <button class="cd__confirm" [class.cd__confirm--danger]="p.danger" type="button" (click)="respond(true)">
+          {{ p.confirmText || 'Confirm' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

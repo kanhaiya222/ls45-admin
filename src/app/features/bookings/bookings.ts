@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BookingAdminService } from '../../core/booking-admin.service';
 import { Booking, PaymentRecord } from '../../core/models';
 import { ListStateComponent } from '../../shared/list-state/list-state';
+import { ToastService } from '../../core/toast.service';
 
 @Component({
   selector: 'app-admin-bookings',
@@ -15,6 +16,7 @@ import { ListStateComponent } from '../../shared/list-state/list-state';
 export class BookingsPage {
   private readonly bookingsApi = inject(BookingAdminService);
   private readonly fb = inject(FormBuilder);
+  private readonly toast = inject(ToastService);
 
   readonly items = signal<Booking[]>([]);
   readonly loading = signal(true);
@@ -108,9 +110,13 @@ export class BookingsPage {
       next: () => {
         this.cancelling.set(false);
         this.cancelingId.set(null);
+        this.toast.success('Booking cancelled');
         this.load(0);
       },
-      error: () => this.cancelling.set(false),
+      error: () => {
+        this.cancelling.set(false);
+        this.toast.error('Could not cancel the booking');
+      },
     });
   }
 
