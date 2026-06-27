@@ -19,7 +19,23 @@
 .sidebar__name { font-family: var(--font-serif); font-size: 17px; color: #fff; }
 .sidebar__logo { height: 30px; width: auto; max-width: 150px; object-fit: contain; display: block; }
 
-.sidebar__nav { display: flex; flex-direction: column; gap: 2px; overflow-y: auto; overflow-x: hidden; }
+.sidebar__nav {
+  display: flex; flex-direction: column; gap: 2px;
+  flex: 1; min-height: 0;                 /* take remaining height + scroll inside the flex column */
+  overflow-y: auto; overflow-x: hidden;
+  padding-right: 4px;                      /* breathing room beside the scrollbar */
+  scrollbar-width: thin;                   /* Firefox: slim scrollbar */
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+  overscroll-behavior: contain;            /* don't scroll the page when the nav hits its end */
+}
+/* WebKit/Blink: slim, subtle scrollbar that blends with the dark sidebar */
+.sidebar__nav::-webkit-scrollbar { width: 7px; }
+.sidebar__nav::-webkit-scrollbar-track { background: transparent; }
+.sidebar__nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16); border-radius: 999px;
+  border: 2px solid transparent; background-clip: padding-box;
+}
+.sidebar__nav:hover::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); background-clip: padding-box; }
 .sb-section {
   font-size: 10px; text-transform: uppercase; letter-spacing: 0.09em;
   color: rgba(255, 255, 255, 0.38); padding: 14px 12px 5px; white-space: nowrap;
