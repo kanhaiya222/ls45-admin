@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: linear-gradient(135deg, var(--teal-900), var(--teal-700));
+  background: linear-gradient(135deg, #04342c, #0f6e56);
 }
 
 .login__card {
@@ -27,7 +27,7 @@
   font-family: var(--font-serif);
   font-size: 14px;
   background: var(--teal-800);
-  color: var(--white);
+  color: #fff;
   padding: 5px 9px;
   border-radius: var(--radius-sm);
 }

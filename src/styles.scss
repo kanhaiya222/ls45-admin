@@ -45,7 +45,7 @@ a { color: inherit; text-decoration: none; }
 
 .btn-primary {
   display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-  padding: 11px 22px; background: var(--teal-800); color: var(--white);
+  padding: 11px 22px; background: var(--teal-800); color: #fff;
   font-family: var(--font-sans); font-size: 13px; font-weight: 500;
   border: none; border-radius: var(--radius-md); cursor: pointer; transition: background .15s;
 }
@@ -59,3 +59,28 @@ a { color: inherit; text-decoration: none; }
   border-radius: var(--radius-md); cursor: pointer; transition: all .15s;
 }
 .btn-outline:hover { background: var(--gray-100); }
+
+/* ============================================================
+   Dark theme — applied via <html data-theme="dark"> by ThemeService.
+   Always-dark surfaces (sidebar, bulkbar) use literal colours in their
+   own SCSS so these token swaps only affect content surfaces/text.
+   ============================================================ */
+[data-theme='dark'] {
+  color-scheme: dark;
+  --white: #1b211f;     /* card/panel/input surface */
+  --gray-50: #10140f;   /* page background */
+  --gray-100: #232a27;  /* subtle bg / hover / borders */
+  --gray-200: #323b37;  /* borders */
+  --gray-300: #46524d;  /* stronger borders */
+  --gray-500: #9aa39e;  /* muted text */
+  --gray-700: #c7cdc9;  /* body text */
+  --gray-900: #eef2f0;  /* headings */
+  --teal-900: #d6e9dd;  /* heading-text usages (decoupled from sidebar) */
+  --teal-800: #1f9e74;  /* button bg + accent text (brightened) */
+  --teal-700: #18926a;  /* button hover */
+  --teal-100: #14302a;  /* tint badges (darkened) */
+  --coral-600: #e8825c; /* accent text (brightened) */
+  --coral-100: #3a201a; /* tint (darkened) */
+  --amber-700: #e0ad5c; /* accent text (brightened) */
+  --amber-100: #38301a; /* tint (darkened) */
+}

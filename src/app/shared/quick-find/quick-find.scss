@@ -1,7 +1,7 @@
 .qf { position: fixed; inset: 0; z-index: 250; display: flex; justify-content: center; align-items: flex-start; padding: 12vh 20px 20px; }
 .qf__backdrop { position: absolute; inset: 0; background: rgba(4, 52, 44, .4); animation: qf-fade .15s ease; }
 .qf__panel {
-  position: relative; width: 100%; max-width: 540px; background: #fff; border-radius: var(--radius-lg);
+  position: relative; width: 100%; max-width: 540px; background: var(--white); border-radius: var(--radius-lg);
   box-shadow: 0 30px 70px -20px rgba(0, 0, 0, .5); overflow: hidden; animation: qf-pop .16s ease both;
 }
 .qf__search { display: flex; align-items: center; gap: 11px; padding: 16px 18px; border-bottom: 1px solid var(--gray-100); }

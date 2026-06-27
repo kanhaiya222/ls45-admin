@@ -46,7 +46,7 @@
 .tab.is-active {
   background: var(--teal-800);
   border-color: var(--teal-800);
-  color: var(--white);
+  color: #fff;
 }
 
 .card {
@@ -167,7 +167,7 @@
 
 .bulkbar {
   display: flex; align-items: center; gap: 10px; padding: 12px 18px;
-  background: var(--teal-900); color: #fff; flex-wrap: wrap;
+  background: #04342c; color: #fff; flex-wrap: wrap;
 }
 .bulkbar__count { font-size: 13px; font-weight: 600; margin-right: 4px; }
 .bulkbar .btn-mini { margin-left: 0; }

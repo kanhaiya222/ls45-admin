@@ -7,6 +7,7 @@ import { ToastContainerComponent } from '../../shared/toast/toast-container';
 import { ConfirmDialogComponent } from '../../shared/confirm/confirm-dialog';
 import { QuickFindComponent } from '../../shared/quick-find/quick-find';
 import { QuickFindService } from '../../core/quick-find.service';
+import { ThemeService } from '../../core/theme.service';
 
 interface Crumb {
   readonly label: string;
@@ -80,6 +81,7 @@ export class ShellComponent {
   private readonly router = inject(Router);
   private readonly reports = inject(ReportService);
   protected readonly quickFind = inject(QuickFindService);
+  protected readonly theme = inject(ThemeService);
 
   readonly user = this.auth.user;
 
