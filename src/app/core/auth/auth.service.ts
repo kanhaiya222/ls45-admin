@@ -25,6 +25,33 @@ export class AuthService {
     return roles.some((r) => r.toUpperCase().includes('ADMIN'));
   });
 
+  /** Top-level admins see every module regardless of fine-grained permissions. */
+  readonly isSuperAdmin = computed(() =>
+    (this.currentUser()?.roles ?? []).some((r) => r.toUpperCase().includes('SUPER_ADMIN')),
+  );
+  private readonly isTopAdmin = computed(() =>
+    (this.currentUser()?.roles ?? []).some(
+      (r) => r.toUpperCase().includes('SUPER_ADMIN') || r.toUpperCase().includes('TENANT_ADMIN'),
+    ),
+  );
+  private readonly perms = computed(() => new Set(this.currentUser()?.permissions ?? []));
+
+  /** True if the signed-in user holds the given permission (RESOURCE:ACTION:SCOPE). */
+  hasPermission(code: string): boolean {
+    return this.perms().has(code);
+  }
+
+  /**
+   * Whether the user may see a module/nav item. A null requirement is always visible; top-level
+   * admins (SUPER/TENANT) see everything; otherwise the user must hold the required permission.
+   */
+  canAccess(requiredPermission?: string | null): boolean {
+    if (!requiredPermission) {
+      return true;
+    }
+    return this.isTopAdmin() || this.perms().has(requiredPermission);
+  }
+
   login(request: LoginRequest): Observable<AuthResponse> {
     return this.http
       .post<ApiResponse<AuthResponse>>(`${API_BASE_URL}/auth/login`, { deviceType: 'WEB', ...request })

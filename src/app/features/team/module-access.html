@@ -1,0 +1,73 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">Module Access</h1>
+    <p class="page__sub">
+      Grant each role access to admin modules. Changes take effect the next time that role signs in.
+      Super Admin and Tenant Admin always have full access.
+    </p>
+  </div>
+</header>
+
+<app-list-state
+  [loading]="loading()"
+  [error]="errored()"
+  [empty]="rows().length === 0 && lockedRows().length === 0"
+  errorTitle="Couldn't load roles"
+  emptyTitle="No roles to configure"
+>
+  <div class="card">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th class="matrix__rolehead">Role</th>
+          @for (m of modules; track m.id) {
+            <th class="matrix__modhead" [attr.title]="m.description">{{ m.label }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (role of rows(); track role.publicId) {
+          <tr>
+            <td class="matrix__role">
+              <span class="matrix__rolename">{{ label(role.name) }}</span>
+              @if (role.description) { <span class="matrix__roledesc">{{ role.description }}</span> }
+            </td>
+            @for (m of modules; track m.id) {
+              <td class="matrix__cell">
+                <label class="switch" [class.is-busy]="isBusy(role, m)">
+                  <input
+                    type="checkbox"
+                    [checked]="hasModule(role, m)"
+                    [disabled]="isBusy(role, m)"
+                    (change)="toggle(role, m)"
+                    [attr.aria-label]="m.label + ' access for ' + label(role.name)"
+                  />
+                  <span class="switch__track"><span class="switch__thumb"></span></span>
+                </label>
+              </td>
+            }
+          </tr>
+        }
+
+        @for (role of lockedRows(); track role.publicId) {
+          <tr class="matrix__locked">
+            <td class="matrix__role">
+              <span class="matrix__rolename">{{ label(role.name) }}</span>
+              <span class="chip chip--full">Full access</span>
+            </td>
+            @for (m of modules; track m.id) {
+              <td class="matrix__cell">
+                <span class="dot dot--on" aria-label="Always on">✓</span>
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <p class="hint">
+    Tip: assign a role to a staff member on the <strong>Team</strong> screen, then grant that role the
+    modules it needs here. Roles &amp; team management stay limited to admins.
+  </p>
+</app-list-state>

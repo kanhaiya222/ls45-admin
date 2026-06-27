@@ -9,7 +9,7 @@
     </div>
 
     <nav class="sidebar__nav">
-      @for (g of groups; track g.label) {
+      @for (g of visibleGroups(); track g.label) {
         <p class="sb-section">{{ g.label }}</p>
         @for (it of g.items; track it.route) {
           <a

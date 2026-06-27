@@ -22,6 +22,12 @@ interface NavItem {
   readonly exact?: boolean;
   /** Key into the live `badges` map for a count chip (e.g. pending bookings). */
   readonly badgeKey?: string;
+  /** Permission (RESOURCE:ACTION:SCOPE) required to see this item; admins bypass. */
+  readonly perm?: string;
+  /** Visible only to TENANT_ADMIN / SUPER_ADMIN (sensitive admin functions). */
+  readonly adminOnly?: boolean;
+  /** Visible only to SUPER_ADMIN (e.g. Module Access). */
+  readonly superOnly?: boolean;
 }
 
 interface NavGroup {
@@ -37,13 +43,13 @@ const SEGMENT_LABELS: Record<string, string> = {
   packages: 'Packages', bookings: 'Bookings', reports: 'Reports', taxonomy: 'Taxonomy',
   content: 'Content', pages: 'Pages', blog: 'Blog', categories: 'Categories',
   departures: 'Departures', manifest: 'Manifest', new: 'New', edit: 'Edit',
-  team: 'Team', users: 'Team', roles: 'Roles', customers: 'Customers',
+  team: 'Team', users: 'Team', roles: 'Roles', customers: 'Customers', 'module-access': 'Module Access',
 };
 
 /** Top-level routes that actually exist — only these breadcrumb segments are clickable. */
 const NAVIGABLE_ROUTES = new Set([
   '/packages', '/bookings', '/reports', '/taxonomy', '/content/pages', '/content/blog',
-  '/team/users', '/team/roles', '/customers',
+  '/team/users', '/team/roles', '/team/module-access', '/customers',
 ]);
 
 /** Inline icon path data (24x24) keyed by name — avoids an icon-font dependency. */
@@ -58,6 +64,7 @@ const ICONS: Record<string, string> = {
   team: 'M12 12a4 4 0 100-8 4 4 0 000 8zm-8 9a8 8 0 0116 0z',
   roles: 'M12 1l9 4v6c0 5-3.8 9.7-9 11-5.2-1.3-9-6-9-11V5zm0 2.2L5 6.3V11c0 3.8 2.8 7.5 7 8.7 4.2-1.2 7-4.9 7-8.7V6.3z',
   customers: 'M16 11a3 3 0 100-6 3 3 0 000 6zm-8 0a3 3 0 100-6 3 3 0 000 6zm0 2c-2.7 0-8 1.3-8 4v3h10v-3c0-1 .4-1.8 1-2.5C5 13.2 8 13 8 13zm8 0c-.3 0-.7 0-1.1.1 1.3 1 1.1 2 1.1 2.9v3h8v-3c0-2.7-5.3-4-8-4z',
+  access: 'M12 1l9 4v6c0 5-3.8 9.7-9 11-5.2-1.3-9-6-9-11V5zm-1 9H7l5-5v3h4l-5 5z',
 };
 
 /**
@@ -140,33 +147,56 @@ export class ShellComponent {
     this.crumbs.set(crumbs);
   }
 
-  readonly groups: readonly NavGroup[] = [
+  private readonly allGroups: readonly NavGroup[] = [
     { label: 'Overview', items: [{ label: 'Dashboard', route: '/', icon: 'dashboard', exact: true }] },
     {
       label: 'Catalogue',
       items: [
-        { label: 'Packages', route: '/packages', icon: 'packages' },
-        { label: 'Taxonomy', route: '/taxonomy', icon: 'taxonomy' },
+        { label: 'Packages', route: '/packages', icon: 'packages', perm: 'package:read:all' },
+        { label: 'Taxonomy', route: '/taxonomy', icon: 'taxonomy', perm: 'package:read:all' },
       ],
     },
-    { label: 'Operations', items: [{ label: 'Bookings', route: '/bookings', icon: 'bookings', badgeKey: 'bookings' }] },
+    {
+      label: 'Operations',
+      items: [
+        { label: 'Bookings', route: '/bookings', icon: 'bookings', badgeKey: 'bookings', perm: 'booking:read:all' },
+      ],
+    },
     {
       label: 'Content',
       items: [
-        { label: 'Pages', route: '/content/pages', icon: 'pages' },
-        { label: 'Blog', route: '/content/blog', icon: 'blog' },
+        { label: 'Pages', route: '/content/pages', icon: 'pages', perm: 'content:read:all' },
+        { label: 'Blog', route: '/content/blog', icon: 'blog', perm: 'content:read:all' },
       ],
     },
-    { label: 'Insights', items: [{ label: 'Reports', route: '/reports', icon: 'reports' }] },
+    { label: 'Insights', items: [{ label: 'Reports', route: '/reports', icon: 'reports', perm: 'report:read:all' }] },
     {
       label: 'Team & Access',
       items: [
-        { label: 'Team', route: '/team/users', icon: 'team' },
-        { label: 'Roles', route: '/team/roles', icon: 'roles' },
-        { label: 'Customers', route: '/customers', icon: 'customers' },
+        { label: 'Customers', route: '/customers', icon: 'customers', perm: 'user:read:all' },
+        { label: 'Team', route: '/team/users', icon: 'team', adminOnly: true },
+        { label: 'Roles', route: '/team/roles', icon: 'roles', adminOnly: true },
+        { label: 'Module Access', route: '/team/module-access', icon: 'access', superOnly: true },
       ],
     },
   ];
+
+  /** Nav filtered to what the signed-in user may see (by permission / admin level). */
+  readonly visibleGroups = computed<readonly NavGroup[]>(() =>
+    this.allGroups
+      .map((g) => ({ label: g.label, items: g.items.filter((it) => this.canShow(it)) }))
+      .filter((g) => g.items.length > 0),
+  );
+
+  private canShow(it: NavItem): boolean {
+    if (it.superOnly) {
+      return this.auth.isSuperAdmin();
+    }
+    if (it.adminOnly) {
+      return this.auth.isAdmin();
+    }
+    return this.auth.canAccess(it.perm);
+  }
 
   iconPath(key: string): string {
     return ICONS[key] ?? '';

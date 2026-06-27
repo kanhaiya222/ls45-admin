@@ -33,6 +33,8 @@ export interface AuthUser {
   lastName: string;
   status?: string;
   roles?: string[];
+  /** Effective permissions (RESOURCE:ACTION:SCOPE) — drives module/sidebar visibility. */
+  permissions?: string[];
   lastLoginAt?: string;
 }
 

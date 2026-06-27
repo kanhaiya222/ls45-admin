@@ -50,4 +50,18 @@ export class RoleAdminService {
       .get<ApiResponse<Permission[]>>(`${API_BASE_URL}/admin/permissions`)
       .pipe(map((res) => res.data));
   }
+
+  /** Grant permission codes to a role (additive). Works on system roles too (unlike role edit). */
+  assignPermissions(rolePublicId: string, codes: readonly string[]): Observable<void> {
+    return this.http
+      .post<ApiResponse<unknown>>(`${this.base}/${rolePublicId}/permissions`, codes)
+      .pipe(map(() => undefined));
+  }
+
+  /** Revoke a single permission code from a role. */
+  removePermission(rolePublicId: string, code: string): Observable<void> {
+    return this.http
+      .delete<ApiResponse<unknown>>(`${this.base}/${rolePublicId}/permissions/${encodeURIComponent(code)}`)
+      .pipe(map(() => undefined));
+  }
 }

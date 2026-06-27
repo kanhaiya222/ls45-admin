@@ -11,3 +11,12 @@ export const adminGuard: CanActivateFn = (_route, state) => {
   const router = inject(Router);
   return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
 };
+
+/** Restricts a route to SUPER_ADMIN (e.g. Module Access); other admins are sent to the dashboard. */
+export const superAdminGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  if (auth.isAuthenticated() && auth.isSuperAdmin()) {
+    return true;
+  }
+  return inject(Router).createUrlTree(['/']);
+};

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { adminGuard } from './core/auth/auth.guard';
+import { adminGuard, superAdminGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
   {
@@ -117,6 +117,12 @@ export const routes: Routes = [
         path: 'customers',
         loadComponent: () => import('./features/customers/customers').then((m) => m.CustomersPage),
         title: 'Customers · LS45 Admin',
+      },
+      {
+        path: 'team/module-access',
+        canActivate: [superAdminGuard],
+        loadComponent: () => import('./features/team/module-access').then((m) => m.ModuleAccessPage),
+        title: 'Module Access · LS45 Admin',
       },
     ],
   },
