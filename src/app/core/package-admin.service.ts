@@ -62,6 +62,16 @@ export class PackageAdminService {
       .pipe(map((res) => res.data));
   }
 
+  /**
+   * Replace the package's "Shop this journey" products (commerce product public ids, in display
+   * order). Returns the refreshed package detail (with the new taggedProducts).
+   */
+  setTaggedProducts(packagePublicId: string, productPublicIds: string[]): Observable<PackageDetail> {
+    return this.http
+      .put<ApiResponse<PackageDetail>>(`${this.base}/${packagePublicId}/products`, productPublicIds)
+      .pipe(map((res) => res.data));
+  }
+
   listCategories(): Observable<Category[]> {
     return this.http
       .get<ApiResponse<Category[]>>(`${API_BASE_URL}/categories`)

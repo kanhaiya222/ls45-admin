@@ -1,12 +1,21 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PackageAdminService } from '../../core/package-admin.service';
-import { AddMediaPayload, CreateFaqPayload, Faq, PackageMedia } from '../../core/models';
+import { ProductAdminService } from '../../core/product-admin.service';
+import { BrandPricePipe } from '../../core/brand-price.pipe';
+import {
+  AddMediaPayload,
+  CreateFaqPayload,
+  Faq,
+  PackageMedia,
+  ProductListItem,
+  TaggedProduct,
+} from '../../core/models';
 
 @Component({
   selector: 'app-admin-package-content',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, FormsModule, RouterLink, BrandPricePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './package-content.html',
   styleUrl: './package-content.scss',
@@ -14,6 +23,7 @@ import { AddMediaPayload, CreateFaqPayload, Faq, PackageMedia } from '../../core
 export class PackageContentPage {
   private readonly fb = inject(FormBuilder);
   private readonly api = inject(PackageAdminService);
+  private readonly productsApi = inject(ProductAdminService);
   private readonly route = inject(ActivatedRoute);
 
   readonly packagePublicId = this.route.snapshot.paramMap.get('id') ?? '';
@@ -28,6 +38,18 @@ export class PackageContentPage {
   readonly savingMedia = signal(false);
   readonly faqError = signal<string | null>(null);
   readonly mediaError = signal<string | null>(null);
+
+  // ── "Shop this journey": cross-sold commerce products ──
+  readonly tagged = signal<TaggedProduct[]>([]);
+  readonly availableProducts = signal<ProductListItem[]>([]);
+  readonly selectedProductId = signal('');
+  readonly savingTagged = signal(false);
+  readonly taggedError = signal<string | null>(null);
+  /** Active products not already tagged — the pickable options. */
+  readonly selectableProducts = computed(() => {
+    const taggedIds = new Set(this.tagged().map((p) => p.publicId));
+    return this.availableProducts().filter((p) => !taggedIds.has(p.publicId));
+  });
 
   readonly faqForm = this.fb.nonNullable.group({
     question: ['', [Validators.required, Validators.maxLength(500)]],
@@ -49,11 +71,50 @@ export class PackageContentPage {
       next: (pkg) => {
         this.packageName.set(pkg.name);
         this.media.set(pkg.media ?? []);
+        this.tagged.set(pkg.taggedProducts ?? []);
         this.loadingMedia.set(false);
       },
       error: () => this.loadingMedia.set(false),
     });
+    this.productsApi.list('ACTIVE', 0, 100).subscribe({
+      next: (page) => this.availableProducts.set(page.content),
+      error: () => this.availableProducts.set([]),
+    });
     this.loadFaqs();
+  }
+
+  // ── tagged products ───────────────────────────────────────────────────────────
+  addTagged(): void {
+    const id = this.selectedProductId();
+    if (!id || this.savingTagged() || this.tagged().some((p) => p.publicId === id)) {
+      return;
+    }
+    const ids = [...this.tagged().map((p) => p.publicId), id];
+    this.persistTagged(ids);
+  }
+
+  removeTagged(p: TaggedProduct): void {
+    if (this.savingTagged()) {
+      return;
+    }
+    const ids = this.tagged().map((t) => t.publicId).filter((x) => x !== p.publicId);
+    this.persistTagged(ids);
+  }
+
+  private persistTagged(productPublicIds: string[]): void {
+    this.savingTagged.set(true);
+    this.taggedError.set(null);
+    this.api.setTaggedProducts(this.packagePublicId, productPublicIds).subscribe({
+      next: (pkg) => {
+        this.tagged.set(pkg.taggedProducts ?? []);
+        this.selectedProductId.set('');
+        this.savingTagged.set(false);
+      },
+      error: (err: unknown) => {
+        this.savingTagged.set(false);
+        this.taggedError.set(this.messageFrom(err));
+      },
+    });
   }
 
   loadFaqs(): void {

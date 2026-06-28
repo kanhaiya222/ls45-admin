@@ -99,3 +99,56 @@
     }
   </section>
 </div>
+
+<section class="shop">
+  <h2 class="col__title">Shop this journey</h2>
+  <p class="muted shop__hint">
+    Tag commerce products to cross-sell on this package's detail page. Only published (active)
+    products can be tagged.
+  </p>
+
+  @if (taggedError()) {
+    <div class="add__error" role="alert">{{ taggedError() }}</div>
+  }
+
+  <div class="shop__add">
+    <select [ngModel]="selectedProductId()" (ngModelChange)="selectedProductId.set($event)">
+      <option value="">Select a product to tag…</option>
+      @for (p of selectableProducts(); track p.publicId) {
+        <option [value]="p.publicId">{{ p.name }} ({{ p.sku }})</option>
+      }
+    </select>
+    <button
+      class="btn-primary"
+      type="button"
+      [disabled]="!selectedProductId() || savingTagged()"
+      (click)="addTagged()"
+    >
+      {{ savingTagged() ? 'Saving…' : 'Tag product' }}
+    </button>
+  </div>
+
+  @if (tagged().length === 0) {
+    <p class="muted">No products tagged yet.</p>
+  } @else {
+    <ul class="list">
+      @for (p of tagged(); track p.publicId) {
+        <li class="list__item">
+          @if (p.thumbnailUrl || p.heroImageUrl) {
+            <img class="thumb" [src]="p.thumbnailUrl || p.heroImageUrl" [alt]="p.name" loading="lazy" />
+          } @else {
+            <span class="thumb thumb--video">🛍</span>
+          }
+          <div class="media__body">
+            <span class="tbl__name">{{ p.name }}</span>
+            @if (p.basePrice != null) { <span class="chip">{{ p.basePrice | brandPrice }}</span> }
+            @if (p.shortDescription) { <span class="media__alt">{{ p.shortDescription }}</span> }
+          </div>
+          <button class="del" type="button" [disabled]="savingTagged()" (click)="removeTagged(p)">
+            Remove
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</section>

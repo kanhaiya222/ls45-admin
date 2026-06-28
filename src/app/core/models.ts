@@ -119,6 +119,18 @@ export interface AddMediaPayload {
   primary: boolean;
 }
 
+/** Mirrors TaggedProductResponse — a Shop product cross-sold on a package ("Shop this journey"). */
+export interface TaggedProduct {
+  publicId: string;
+  name: string;
+  slug?: string;
+  shortDescription?: string;
+  heroImageUrl?: string;
+  thumbnailUrl?: string;
+  basePrice?: number;
+  currencyCode?: string;
+}
+
 /** Mirrors PackageDetailResponse (GET /api/v1/admin/packages/{id}). */
 export interface PackageDetail {
   publicId: string;
@@ -144,6 +156,7 @@ export interface PackageDetail {
   metaTitle?: string;
   metaDescription?: string;
   media?: PackageMedia[];
+  taggedProducts?: TaggedProduct[];
 }
 
 /** Mirrors CreatePackageRequest (POST/PUT /api/v1/admin/packages[/{id}]). */
