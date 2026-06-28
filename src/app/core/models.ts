@@ -189,6 +189,102 @@ export interface PackageListItem {
   categoryName?: string;
 }
 
+// ── Commerce: products (the "Shop") ──────────────────────────────────────────
+
+/** Backend enum is DRAFT | ACTIVE | ARCHIVED — "published" products are ACTIVE. */
+export type ProductStatus = 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
+
+/** Mirrors ProductListResponse (GET /api/v1/admin/products). */
+export interface ProductListItem {
+  publicId: string;
+  name: string;
+  slug: string;
+  sku: string;
+  status: ProductStatus;
+  productType?: string;
+  basePrice?: number;
+  currencyCode?: string;
+  thumbnailUrl?: string;
+  featured: boolean;
+}
+
+/** Mirrors ProductVariantResponse. */
+export interface ProductVariant {
+  publicId: string;
+  sku: string;
+  variantName: string;
+  attributes?: string;
+  priceOverride?: number;
+  effectivePrice?: number;
+  weightGrams?: number;
+  sortOrder: number;
+  active: boolean;
+}
+
+/** Mirrors ProductMediaResponse. */
+export interface ProductMedia {
+  publicId: string;
+  mediaType?: string;
+  url: string;
+  altText?: string;
+  sortOrder: number;
+  primary: boolean;
+}
+
+/** Mirrors ProductDetailResponse (GET /api/v1/admin/products/{id}). */
+export interface ProductDetail {
+  publicId: string;
+  name: string;
+  slug?: string;
+  sku: string;
+  status?: ProductStatus;
+  productType?: string;
+  shortDescription?: string;
+  description?: string;
+  basePrice?: number;
+  currencyCode?: string;
+  heroImageUrl?: string;
+  thumbnailUrl?: string;
+  weightGrams?: number;
+  featured: boolean;
+  metaTitle?: string;
+  metaDescription?: string;
+  canonicalUrl?: string;
+  publishedAt?: string;
+  variants?: ProductVariant[];
+  media?: ProductMedia[];
+}
+
+/** Mirrors CreateProductRequest (POST/PUT /api/v1/admin/products[/{id}]). */
+export interface CreateProductPayload {
+  name: string;
+  slug?: string;
+  sku: string;
+  productType?: string;
+  shortDescription?: string;
+  description?: string;
+  basePrice: number;
+  currencyCode?: string;
+  heroImageUrl?: string;
+  thumbnailUrl?: string;
+  weightGrams: number;
+  featured: boolean;
+  metaTitle?: string;
+  metaDescription?: string;
+  canonicalUrl?: string;
+}
+
+/** Mirrors AddProductVariantRequest (POST /api/v1/admin/products/{id}/variants). */
+export interface AddProductVariantPayload {
+  sku: string;
+  variantName: string;
+  attributes?: string;
+  priceOverride?: number;
+  weightGrams?: number;
+  sortOrder: number;
+  active: boolean;
+}
+
 /** Mirrors BookingItemResponse. */
 export interface BookingItem {
   publicId: string;

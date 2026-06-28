@@ -1,0 +1,246 @@
+.page__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.page__title {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 28px;
+  color: var(--teal-900);
+}
+
+.page__sub {
+  margin-top: 5px;
+  font-size: 14px;
+  color: var(--gray-500);
+}
+
+.form-error {
+  margin-bottom: 18px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: var(--coral-100);
+  color: var(--coral-600);
+  font-size: 13px;
+}
+
+.form-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 18px;
+}
+
+.section__title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--gray-500);
+  margin-bottom: 18px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field--wide {
+  grid-column: 1 / -1;
+}
+
+.field--check {
+  flex-direction: row;
+  align-items: center;
+  gap: 9px;
+  align-self: end;
+  padding-bottom: 10px;
+}
+
+.field__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.field__opt {
+  font-weight: 400;
+  color: var(--gray-500);
+}
+
+.field input,
+.field select,
+.field textarea {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--gray-900);
+  padding: 10px 12px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  background: var(--gray-50);
+  transition: border-color 0.15s, background 0.15s;
+  resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--teal-500);
+  background: var(--white);
+}
+
+.field--check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--teal-700);
+}
+
+.field__err {
+  font-size: 12px;
+  color: var(--coral-600);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.muted {
+  color: var(--gray-500);
+  font-size: 14px;
+}
+
+.state {
+  background: var(--white);
+  border: 1px dashed var(--coral-100);
+  border-radius: var(--radius-lg);
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--gray-500);
+}
+
+.state h3 {
+  color: var(--gray-700);
+  margin-bottom: 14px;
+}
+
+/* ---- variants ---- */
+.variants__hint {
+  margin-top: -8px;
+  margin-bottom: 16px;
+}
+
+.vtbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+
+.vtbl th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--gray-500);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.vtbl td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--gray-100);
+  color: var(--gray-700);
+  vertical-align: middle;
+}
+
+.vtbl tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.vtbl__name {
+  font-weight: 500;
+  color: var(--gray-900);
+}
+
+.vtbl__attrs {
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+.vtbl__actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.vadd {
+  border-top: 1px dashed var(--gray-200);
+  padding-top: 18px;
+}
+
+.vadd__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
+.btn-mini {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  margin-left: 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-300);
+  background: var(--white);
+  color: var(--gray-700);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.btn-mini:hover {
+  background: var(--gray-100);
+}
+
+.btn-mini--danger {
+  border-color: var(--coral-300, #f3b6ab);
+  color: var(--coral-600);
+}
+
+.btn-mini--danger:hover {
+  background: var(--coral-100);
+}
+
+.btn-mini:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 680px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page__head {
+    flex-direction: column;
+  }
+}

@@ -48,6 +48,24 @@ export const routes: Routes = [
         title: 'Departures · LS45 Admin',
       },
       {
+        path: 'products',
+        loadComponent: () =>
+          import('./features/products/product-list').then((m) => m.ProductListPage),
+        title: 'Products · LS45 Admin',
+      },
+      {
+        path: 'products/new',
+        loadComponent: () =>
+          import('./features/products/product-form').then((m) => m.ProductFormPage),
+        title: 'New product · LS45 Admin',
+      },
+      {
+        path: 'products/:id/edit',
+        loadComponent: () =>
+          import('./features/products/product-form').then((m) => m.ProductFormPage),
+        title: 'Edit product · LS45 Admin',
+      },
+      {
         path: 'departures/:id/manifest',
         loadComponent: () => import('./features/departures/manifest').then((m) => m.ManifestPage),
         title: 'Manifest · LS45 Admin',

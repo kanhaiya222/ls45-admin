@@ -45,7 +45,7 @@ const MOBILE_QUERY = '(max-width: 860px)';
 
 /** Friendly labels for URL segments used in the breadcrumb + page title. */
 const SEGMENT_LABELS: Record<string, string> = {
-  packages: 'Packages', bookings: 'Bookings', reports: 'Reports', taxonomy: 'Taxonomy',
+  packages: 'Packages', products: 'Products', bookings: 'Bookings', reports: 'Reports', taxonomy: 'Taxonomy',
   content: 'Content', pages: 'Pages', blog: 'Blog', categories: 'Categories',
   departures: 'Departures', manifest: 'Manifest', new: 'New', edit: 'Edit',
   team: 'Team', users: 'Team', roles: 'Roles', customers: 'Customers', 'module-access': 'Module Access',
@@ -54,7 +54,7 @@ const SEGMENT_LABELS: Record<string, string> = {
 
 /** Top-level routes that actually exist — only these breadcrumb segments are clickable. */
 const NAVIGABLE_ROUTES = new Set([
-  '/packages', '/bookings', '/reports', '/taxonomy', '/content/pages', '/content/blog',
+  '/packages', '/products', '/bookings', '/reports', '/taxonomy', '/content/pages', '/content/blog',
   '/team/users', '/team/roles', '/team/module-access', '/customers', '/settings',
 ]);
 
@@ -162,6 +162,7 @@ export class ShellComponent {
     {
       label: 'Catalogue', icon: 'packages', children: [
         { label: 'Packages', route: '/packages', perm: 'package:read:all' },
+        { label: 'Products', route: '/products', adminOnly: true },
         { label: 'Taxonomy', route: '/taxonomy', perm: 'package:read:all' },
       ],
     },
