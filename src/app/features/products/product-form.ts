@@ -38,6 +38,7 @@ export class ProductFormPage {
   readonly variants = signal<ProductVariant[]>([]);
   readonly addingVariant = signal(false);
   readonly variantActingId = signal<string | null>(null);
+  readonly productStatus = signal<string>('DRAFT');
 
   readonly heading = computed(() => (this.isEdit() ? 'Edit product' : 'New product'));
 
@@ -98,7 +99,16 @@ export class ProductFormPage {
       canonicalUrl: p.canonicalUrl ?? '',
     });
     this.variants.set(p.variants ?? []);
+    this.productStatus.set(p.status ?? 'DRAFT');
     this.loading.set(false);
+  }
+
+  statusClass(): string {
+    switch (this.productStatus()) {
+      case 'ACTIVE': return 'is-active';
+      case 'ARCHIVED': return 'is-archived';
+      default: return 'is-draft';
+    }
   }
 
   submit(): void {

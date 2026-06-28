@@ -1,13 +1,13 @@
-<header class="page__head">
-  <div>
-    <h1 class="page__title">{{ heading() }}</h1>
-    <p class="page__sub">Define a wellness journey. It is created as a draft — publish it from the list.</p>
+<header class="af-head">
+  <div class="af-head__titles">
+    <a class="af-head__crumb" routerLink="/packages">← Packages</a>
+    <h1 class="af-head__title">{{ heading() }}</h1>
+    <p class="af-head__sub">Fields marked <span class="af-req">*</span> are required. New packages are saved as a draft — publish from the list.</p>
   </div>
-  <a class="btn-outline" routerLink="/packages">Back to packages</a>
 </header>
 
 @if (loading()) {
-  <div class="form-card"><p class="muted">Loading package…</p></div>
+  <div class="af-card"><div class="af-card__body"><p class="muted">Loading package…</p></div></div>
 } @else if (loadError()) {
   <div class="state state--error">
     <h3>Couldn't load package</h3>
@@ -15,150 +15,215 @@
   </div>
 } @else {
   @if (saveError()) {
-    <div class="form-error" role="alert">{{ saveError() }}</div>
+    <div class="af-alert" role="alert">{{ saveError() }}</div>
   }
 
   <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-    <section class="form-card">
-      <h2 class="section__title">Basics</h2>
-      <div class="grid">
-        <label class="field field--wide">
-          <span class="field__label">Name</span>
-          <input type="text" formControlName="name" />
-          @if (form.controls.name.touched && form.controls.name.invalid) {
-            <span class="field__err">Name is required.</span>
-          }
-        </label>
-        <label class="field">
-          <span class="field__label">Slug <span class="field__opt">(auto if blank)</span></span>
-          <input type="text" formControlName="slug" placeholder="himalayan-yoga-retreat" />
-        </label>
-        <label class="field">
-          <span class="field__label">Category</span>
-          <select formControlName="categoryPublicId">
-            <option value="">Select a category…</option>
-            @for (c of categories(); track c.publicId) {
-              <option [value]="c.publicId">{{ c.name }}</option>
-            }
-          </select>
-          @if (form.controls.categoryPublicId.touched && form.controls.categoryPublicId.invalid) {
-            <span class="field__err">Category is required.</span>
-          }
-        </label>
-        <label class="field">
-          <span class="field__label">Difficulty</span>
-          <select formControlName="difficulty">
-            @for (d of difficulties; track d) {
-              <option [value]="d">{{ d.charAt(0) + d.slice(1).toLowerCase() }}</option>
-            }
-          </select>
-        </label>
-        <label class="field field--check">
-          <input type="checkbox" formControlName="featured" />
-          <span>Featured</span>
-        </label>
-      </div>
-    </section>
-
-    <section class="form-card">
-      <h2 class="section__title">Pricing &amp; duration</h2>
-      <div class="grid">
-        <label class="field">
-          <span class="field__label">Base price</span>
-          <input type="number" formControlName="basePrice" min="0" />
-          @if (form.controls.basePrice.touched && form.controls.basePrice.invalid) {
-            <span class="field__err">A non-negative price is required.</span>
-          }
-        </label>
-        <label class="field">
-          <span class="field__label">Duration (days)</span>
-          <input type="number" formControlName="durationDays" min="1" />
-          @if (form.controls.durationDays.touched && form.controls.durationDays.invalid) {
-            <span class="field__err">At least 1 day.</span>
-          }
-        </label>
-        <label class="field">
-          <span class="field__label">Duration (nights)</span>
-          <input type="number" formControlName="durationNights" min="0" />
-        </label>
-        <label class="field">
-          <span class="field__label">Min group size</span>
-          <input type="number" formControlName="minGroupSize" min="1" />
-        </label>
-        <label class="field">
-          <span class="field__label">Max group size</span>
-          <input type="number" formControlName="maxGroupSize" min="1" />
-        </label>
-      </div>
-    </section>
-
-    <section class="form-card">
-      <h2 class="section__title">Details</h2>
-      <div class="grid">
-        <label class="field field--wide">
-          <span class="field__label">Short description <span class="field__opt">(≤ 500)</span></span>
-          <textarea formControlName="shortDescription" rows="2"></textarea>
-        </label>
-        <label class="field field--wide">
-          <span class="field__label">Description</span>
-          <textarea formControlName="description" rows="5"></textarea>
-        </label>
-        <label class="field">
-          <span class="field__label">Meeting location</span>
-          <input type="text" formControlName="meetingLocation" />
-        </label>
-        <label class="field">
-          <span class="field__label">End location</span>
-          <input type="text" formControlName="endLocation" />
-        </label>
-        <label class="field field--wide">
-          <span class="field__label">Highlights <span class="field__opt">(one per line)</span></span>
-          <textarea formControlName="highlights" rows="4"></textarea>
-        </label>
-        <label class="field field--wide">
-          <span class="field__label">Inclusions <span class="field__opt">(one per line)</span></span>
-          <textarea formControlName="inclusions" rows="4"></textarea>
-        </label>
-        <label class="field field--wide">
-          <span class="field__label">Exclusions <span class="field__opt">(one per line)</span></span>
-          <textarea formControlName="exclusions" rows="4"></textarea>
-        </label>
-      </div>
-
-      @if (tags().length) {
-        <div class="tags">
-          <span class="field__label">Tags</span>
-          <div class="tags__chips">
-            @for (t of tags(); track t.publicId) {
-              <button
-                type="button"
-                class="tagchip"
-                [class.is-selected]="isTagSelected(t.publicId)"
-                (click)="toggleTag(t.publicId)"
-              >
-                {{ t.name }}
-              </button>
-            }
+    <div class="af">
+      <!-- ============ MAIN ============ -->
+      <div class="af__main">
+        <section class="af-card">
+          <div class="af-card__head">
+            <h2 class="af-card__title">Package details</h2>
+            <p class="af-card__desc">The headline information for this wellness journey.</p>
           </div>
-        </div>
-      }
-    </section>
+          <div class="af-card__body">
+            <div class="af-grid">
+              <label class="af-field af-col-2">
+                <span class="af-label">Name <span class="af-req">*</span></span>
+                <input type="text" formControlName="name" placeholder="e.g. Himalayan Yoga &amp; Meditation Retreat" />
+                @if (form.controls.name.touched && form.controls.name.invalid) {
+                  <span class="af-err">Name is required.</span>
+                }
+              </label>
+              <label class="af-field">
+                <span class="af-label">URL slug <span class="af-opt">auto if blank</span></span>
+                <input type="text" formControlName="slug" placeholder="himalayan-yoga-retreat" />
+              </label>
+              <label class="af-field"><span class="af-label">&nbsp;</span><span class="af-hint">The slug powers the public /packages/&hellip; URL.</span></label>
+              <label class="af-field af-col-2">
+                <span class="af-label">Short description <span class="af-opt">≤ 500 chars</span></span>
+                <textarea formControlName="shortDescription" rows="2" placeholder="A compelling one-liner shown on cards and listings."></textarea>
+              </label>
+              <label class="af-field af-col-2">
+                <span class="af-label">Full description</span>
+                <textarea formControlName="description" rows="6" placeholder="Describe the experience, the place, the pace…"></textarea>
+              </label>
+            </div>
+          </div>
+        </section>
 
-    <section class="form-card">
-      <h2 class="section__title">SEO</h2>
-      <div class="grid">
-        <label class="field field--wide">
-          <span class="field__label">Meta title <span class="field__opt">(≤ 255)</span></span>
-          <input type="text" formControlName="metaTitle" />
-        </label>
-        <label class="field field--wide">
-          <span class="field__label">Meta description <span class="field__opt">(≤ 500)</span></span>
-          <textarea formControlName="metaDescription" rows="2"></textarea>
-        </label>
+        <section class="af-card">
+          <div class="af-card__head">
+            <h2 class="af-card__title">Pricing &amp; duration</h2>
+            <p class="af-card__desc">Starting price and how long the journey runs.</p>
+          </div>
+          <div class="af-card__body">
+            <div class="af-grid">
+              <label class="af-field">
+                <span class="af-label">Base price <span class="af-req">*</span> <span class="af-opt">per person</span></span>
+                <div class="af-prefixed">
+                  <span class="af-prefix">₹</span>
+                  <input type="number" formControlName="basePrice" min="0" placeholder="0" />
+                </div>
+                @if (form.controls.basePrice.touched && form.controls.basePrice.invalid) {
+                  <span class="af-err">Enter a non-negative price.</span>
+                }
+              </label>
+              <label class="af-field">
+                <span class="af-label">Duration (days) <span class="af-req">*</span></span>
+                <input type="number" formControlName="durationDays" min="1" />
+                @if (form.controls.durationDays.touched && form.controls.durationDays.invalid) {
+                  <span class="af-err">At least 1 day.</span>
+                }
+              </label>
+              <label class="af-field">
+                <span class="af-label">Duration (nights)</span>
+                <input type="number" formControlName="durationNights" min="0" />
+              </label>
+              <label class="af-field">
+                <span class="af-label">Min group size</span>
+                <input type="number" formControlName="minGroupSize" min="1" />
+              </label>
+              <label class="af-field">
+                <span class="af-label">Max group size</span>
+                <input type="number" formControlName="maxGroupSize" min="1" />
+                <span class="af-hint">Small groups (≤ 12) tend to convert best.</span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="af-card">
+          <div class="af-card__head">
+            <h2 class="af-card__title">What's included</h2>
+            <p class="af-card__desc">One item per line — these render as crawlable lists on the page.</p>
+          </div>
+          <div class="af-card__body">
+            <div class="af-grid">
+              <label class="af-field af-col-2">
+                <span class="af-label">Highlights</span>
+                <textarea formControlName="highlights" rows="4" placeholder="Sunrise yoga by the Ganges&#10;Guided forest meditation&#10;Ayurvedic consultation"></textarea>
+              </label>
+              <label class="af-field">
+                <span class="af-label">Inclusions</span>
+                <textarea formControlName="inclusions" rows="5" placeholder="Accommodation&#10;All meals&#10;Airport transfers"></textarea>
+              </label>
+              <label class="af-field">
+                <span class="af-label">Exclusions</span>
+                <textarea formControlName="exclusions" rows="5" placeholder="Flights&#10;Personal expenses&#10;Travel insurance"></textarea>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="af-card">
+          <div class="af-card__head">
+            <h2 class="af-card__title">Logistics</h2>
+            <p class="af-card__desc">Where the journey begins and ends.</p>
+          </div>
+          <div class="af-card__body">
+            <div class="af-grid">
+              <label class="af-field">
+                <span class="af-label">Meeting location</span>
+                <input type="text" formControlName="meetingLocation" placeholder="Dehradun Airport (DED)" />
+              </label>
+              <label class="af-field">
+                <span class="af-label">End location</span>
+                <input type="text" formControlName="endLocation" placeholder="Rishikesh" />
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="af-card">
+          <div class="af-card__head">
+            <h2 class="af-card__title">Search engine listing</h2>
+            <p class="af-card__desc">How this package appears in Google &amp; on social.</p>
+          </div>
+          <div class="af-card__body">
+            <div class="af-grid">
+              <label class="af-field af-col-2">
+                <span class="af-label">Meta title <span class="af-opt">≤ 255</span></span>
+                <input type="text" formControlName="metaTitle" placeholder="Defaults to the package name" />
+              </label>
+              <label class="af-field af-col-2">
+                <span class="af-label">Meta description <span class="af-opt">≤ 500</span></span>
+                <textarea formControlName="metaDescription" rows="2"></textarea>
+              </label>
+            </div>
+          </div>
+        </section>
       </div>
-    </section>
 
-    <div class="form-actions">
+      <!-- ============ SIDEBAR ============ -->
+      <aside class="af__side">
+        <section class="af-card af-card--side">
+          <div class="af-card__head"><h2 class="af-card__title">Status</h2></div>
+          <div class="af-card__body">
+            <span class="af-status is-draft">{{ isEdit ? 'EDITING' : 'DRAFT' }}</span>
+            <p class="af-hint" style="margin-top:8px">Publish, add departures &amp; media from the package list.</p>
+          </div>
+        </section>
+
+        <section class="af-card af-card--side">
+          <div class="af-card__head"><h2 class="af-card__title">Organisation</h2></div>
+          <div class="af-card__body">
+            <div class="af-grid af-grid--1">
+              <label class="af-field">
+                <span class="af-label">Category <span class="af-req">*</span></span>
+                <select formControlName="categoryPublicId">
+                  <option value="">Select a category…</option>
+                  @for (c of categories(); track c.publicId) {
+                    <option [value]="c.publicId">{{ c.name }}</option>
+                  }
+                </select>
+                @if (form.controls.categoryPublicId.touched && form.controls.categoryPublicId.invalid) {
+                  <span class="af-err">Category is required.</span>
+                }
+              </label>
+              <label class="af-field">
+                <span class="af-label">Difficulty</span>
+                <select formControlName="difficulty">
+                  @for (d of difficulties; track d) {
+                    <option [value]="d">{{ d.charAt(0) + d.slice(1).toLowerCase() }}</option>
+                  }
+                </select>
+              </label>
+              <label class="af-switch">
+                <span class="af-switch__text">
+                  <strong>Featured</strong>
+                  <span>Spotlight on the home page</span>
+                </span>
+                <input type="checkbox" formControlName="featured" />
+                <span class="af-switch__track"></span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        @if (tags().length) {
+          <section class="af-card af-card--side">
+            <div class="af-card__head">
+              <h2 class="af-card__title">Tags</h2>
+              <p class="af-card__desc">Themes &amp; audiences for filtering.</p>
+            </div>
+            <div class="af-card__body">
+              <div class="af-chips">
+                @for (t of tags(); track t.publicId) {
+                  <button type="button" class="af-chip" [class.is-on]="isTagSelected(t.publicId)" (click)="toggleTag(t.publicId)">
+                    {{ t.name }}
+                  </button>
+                }
+              </div>
+            </div>
+          </section>
+        }
+      </aside>
+    </div>
+
+    <div class="af-bar">
+      <span class="af-bar__hint">{{ isEdit ? 'Editing ' + (form.controls.name.value || 'package') : 'New package' }}</span>
       <a class="btn-outline" routerLink="/packages">Cancel</a>
       <button class="btn-primary" type="submit" [disabled]="saving()">
         {{ saving() ? 'Saving…' : (isEdit ? 'Save changes' : 'Create package') }}

@@ -1,13 +1,13 @@
-<header class="page__head">
-  <div>
-    <h1 class="page__title">{{ heading() }}</h1>
-    <p class="page__sub">Define a Shop product. It is created as a draft — publish it from the list.</p>
+<header class="af-head">
+  <div class="af-head__titles">
+    <a class="af-head__crumb" routerLink="/products">← Products</a>
+    <h1 class="af-head__title">{{ heading() }}</h1>
+    <p class="af-head__sub">Fields marked <span class="af-req">*</span> are required. New products are saved as a draft — publish from the list.</p>
   </div>
-  <a class="btn-outline" routerLink="/products">Back to products</a>
 </header>
 
 @if (loading()) {
-  <div class="form-card"><p class="muted">Loading product…</p></div>
+  <div class="af-card"><div class="af-card__body"><p class="muted">Loading product…</p></div></div>
 } @else if (loadError()) {
   <div class="state state--error">
     <h3>Couldn't load product</h3>
@@ -15,189 +15,229 @@
   </div>
 } @else {
   @if (saveError()) {
-    <div class="form-error" role="alert">{{ saveError() }}</div>
+    <div class="af-alert" role="alert">{{ saveError() }}</div>
   }
 
   <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-    <section class="form-card">
-      <h2 class="section__title">Basics</h2>
-      <div class="grid">
-        <label class="field field--wide">
-          <span class="field__label">Name</span>
-          <input type="text" formControlName="name" />
-          @if (form.controls.name.touched && form.controls.name.invalid) {
-            <span class="field__err">Name is required.</span>
-          }
-        </label>
-        <label class="field">
-          <span class="field__label">SKU</span>
-          <input type="text" formControlName="sku" placeholder="WT-HRB-001" />
-          @if (form.controls.sku.touched && form.controls.sku.invalid) {
-            <span class="field__err">SKU is required.</span>
-          }
-        </label>
-        <label class="field">
-          <span class="field__label">Slug <span class="field__opt">(auto if blank)</span></span>
-          <input type="text" formControlName="slug" placeholder="himalayan-herbal-tea" />
-        </label>
-        <label class="field">
-          <span class="field__label">Type <span class="field__opt">(e.g. PHYSICAL)</span></span>
-          <input type="text" formControlName="productType" placeholder="PHYSICAL" />
-        </label>
-        <label class="field field--check">
-          <input type="checkbox" formControlName="featured" />
-          <span>Featured</span>
-        </label>
-      </div>
-    </section>
+    <div class="af">
+      <!-- ============ MAIN ============ -->
+      <div class="af__main">
+        <section class="af-card">
+          <div class="af-card__head">
+            <h2 class="af-card__title">Product details</h2>
+            <p class="af-card__desc">The basics customers see on the product page.</p>
+          </div>
+          <div class="af-card__body">
+            <div class="af-grid">
+              <label class="af-field af-col-2">
+                <span class="af-label">Name <span class="af-req">*</span></span>
+                <input type="text" formControlName="name" placeholder="e.g. Himalayan Herbal Wellness Tea" />
+                @if (form.controls.name.touched && form.controls.name.invalid) {
+                  <span class="af-err">Name is required.</span>
+                }
+              </label>
+              <label class="af-field">
+                <span class="af-label">SKU <span class="af-req">*</span></span>
+                <input type="text" formControlName="sku" placeholder="WT-HRB-001" />
+                <span class="af-hint">A unique stock code for this product.</span>
+                @if (form.controls.sku.touched && form.controls.sku.invalid) {
+                  <span class="af-err">SKU is required.</span>
+                }
+              </label>
+              <label class="af-field">
+                <span class="af-label">URL slug <span class="af-opt">optional</span></span>
+                <input type="text" formControlName="slug" placeholder="himalayan-herbal-tea" />
+                <span class="af-hint">Leave blank to generate from the name.</span>
+              </label>
+              <label class="af-field af-col-2">
+                <span class="af-label">Short description <span class="af-opt">≤ 500 chars</span></span>
+                <textarea formControlName="shortDescription" rows="2" placeholder="One or two lines shown in the Shop grid."></textarea>
+              </label>
+              <label class="af-field af-col-2">
+                <span class="af-label">Full description</span>
+                <textarea formControlName="description" rows="5" placeholder="Ingredients, benefits, usage…"></textarea>
+              </label>
+            </div>
+          </div>
+        </section>
 
-    <section class="form-card">
-      <h2 class="section__title">Pricing &amp; shipping</h2>
-      <div class="grid">
-        <label class="field">
-          <span class="field__label">Base price</span>
-          <input type="number" formControlName="basePrice" min="0" step="0.01" />
-          @if (form.controls.basePrice.touched && form.controls.basePrice.invalid) {
-            <span class="field__err">A non-negative price is required.</span>
-          }
-        </label>
-        <label class="field">
-          <span class="field__label">Currency <span class="field__opt">(e.g. INR)</span></span>
-          <input type="text" formControlName="currencyCode" maxlength="3" placeholder="INR" />
-        </label>
-        <label class="field">
-          <span class="field__label">Weight (grams)</span>
-          <input type="number" formControlName="weightGrams" min="0" />
-        </label>
-      </div>
-    </section>
+        <section class="af-card">
+          <div class="af-card__head">
+            <h2 class="af-card__title">Pricing &amp; shipping</h2>
+            <p class="af-card__desc">Base price and the weight used to calculate shipping.</p>
+          </div>
+          <div class="af-card__body">
+            <div class="af-grid">
+              <label class="af-field">
+                <span class="af-label">Base price <span class="af-req">*</span></span>
+                <div class="af-prefixed">
+                  <span class="af-prefix">₹</span>
+                  <input type="number" formControlName="basePrice" min="0" step="0.01" placeholder="0.00" />
+                </div>
+                @if (form.controls.basePrice.touched && form.controls.basePrice.invalid) {
+                  <span class="af-err">Enter a non-negative price.</span>
+                }
+              </label>
+              <label class="af-field">
+                <span class="af-label">Currency <span class="af-opt">optional</span></span>
+                <input type="text" formControlName="currencyCode" maxlength="3" placeholder="INR" />
+              </label>
+              <label class="af-field">
+                <span class="af-label">Weight (grams)</span>
+                <input type="number" formControlName="weightGrams" min="0" placeholder="0" />
+                <span class="af-hint">Used for shipping rate bands.</span>
+              </label>
+            </div>
+          </div>
+        </section>
 
-    <section class="form-card">
-      <h2 class="section__title">Details &amp; media</h2>
-      <div class="grid">
-        <label class="field field--wide">
-          <span class="field__label">Short description <span class="field__opt">(≤ 500)</span></span>
-          <textarea formControlName="shortDescription" rows="2"></textarea>
-        </label>
-        <label class="field field--wide">
-          <span class="field__label">Description</span>
-          <textarea formControlName="description" rows="5"></textarea>
-        </label>
-        <label class="field">
-          <span class="field__label">Hero image</span>
-          <app-image-upload formControlName="heroImageUrl" hint="Large image on the product page" />
-        </label>
-        <label class="field">
-          <span class="field__label">Thumbnail</span>
-          <app-image-upload formControlName="thumbnailUrl" hint="Square image for the Shop grid" />
-        </label>
-      </div>
-    </section>
+        <section class="af-card">
+          <div class="af-card__head">
+            <h2 class="af-card__title">Media</h2>
+            <p class="af-card__desc">Upload images — no need to paste URLs.</p>
+          </div>
+          <div class="af-card__body">
+            <div class="af-grid">
+              <label class="af-field">
+                <span class="af-label">Hero image</span>
+                <app-image-upload formControlName="heroImageUrl" hint="Large image on the product page" />
+              </label>
+              <label class="af-field">
+                <span class="af-label">Thumbnail</span>
+                <app-image-upload formControlName="thumbnailUrl" hint="Square image for the Shop grid" />
+              </label>
+            </div>
+          </div>
+        </section>
 
-    <section class="form-card">
-      <h2 class="section__title">SEO</h2>
-      <div class="grid">
-        <label class="field field--wide">
-          <span class="field__label">Meta title <span class="field__opt">(≤ 255)</span></span>
-          <input type="text" formControlName="metaTitle" />
-        </label>
-        <label class="field field--wide">
-          <span class="field__label">Meta description <span class="field__opt">(≤ 500)</span></span>
-          <textarea formControlName="metaDescription" rows="2"></textarea>
-        </label>
-        <label class="field field--wide">
-          <span class="field__label">Canonical URL</span>
-          <input type="text" formControlName="canonicalUrl" placeholder="https://…" />
-        </label>
-      </div>
-    </section>
+        @if (isEdit()) {
+          <section class="af-card">
+            <div class="af-card__head">
+              <h2 class="af-card__title">Variants</h2>
+              <p class="af-card__desc">Sizes, colours or bundles — each with its own SKU and price.</p>
+            </div>
+            <div class="af-card__body">
+              @if (variants().length) {
+                <table class="vtbl">
+                  <thead>
+                    <tr><th>Name</th><th>SKU</th><th>Attributes</th><th>Price override</th><th></th></tr>
+                  </thead>
+                  <tbody>
+                    @for (v of variants(); track v.publicId) {
+                      <tr>
+                        <td class="vtbl__name">{{ v.variantName }}</td>
+                        <td>{{ v.sku }}</td>
+                        <td class="vtbl__attrs">{{ v.attributes || '—' }}</td>
+                        <td>{{ v.priceOverride != null ? v.priceOverride : '—' }}</td>
+                        <td class="r">
+                          <button class="btn-mini btn-mini--danger" type="button"
+                            [disabled]="variantActingId() === v.publicId" (click)="removeVariant(v)">Remove</button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              } @else {
+                <p class="muted">No variants yet.</p>
+              }
 
-    <div class="form-actions">
+              <form class="vadd" [formGroup]="variantForm" (ngSubmit)="addVariant()" novalidate>
+                <div class="af-grid">
+                  <label class="af-field">
+                    <span class="af-label">Variant name <span class="af-req">*</span></span>
+                    <input type="text" formControlName="variantName" placeholder="100g pouch" />
+                  </label>
+                  <label class="af-field">
+                    <span class="af-label">SKU <span class="af-req">*</span></span>
+                    <input type="text" formControlName="sku" placeholder="WT-HRB-001-100" />
+                  </label>
+                  <label class="af-field">
+                    <span class="af-label">Attributes <span class="af-opt">JSON</span></span>
+                    <input type="text" formControlName="attributes" placeholder='{&quot;size&quot;:&quot;100g&quot;}' />
+                  </label>
+                  <label class="af-field">
+                    <span class="af-label">Price override <span class="af-opt">optional</span></span>
+                    <input type="number" formControlName="priceOverride" min="0" step="0.01" />
+                  </label>
+                </div>
+                <div class="vadd__actions">
+                  <button class="btn-outline" type="submit" [disabled]="addingVariant()">
+                    {{ addingVariant() ? 'Adding…' : '+ Add variant' }}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+        }
+
+        <section class="af-card">
+          <div class="af-card__head">
+            <h2 class="af-card__title">Search engine listing</h2>
+            <p class="af-card__desc">How this product appears in Google &amp; on social.</p>
+          </div>
+          <div class="af-card__body">
+            <div class="af-grid">
+              <label class="af-field af-col-2">
+                <span class="af-label">Meta title <span class="af-opt">≤ 255</span></span>
+                <input type="text" formControlName="metaTitle" placeholder="Defaults to the product name" />
+              </label>
+              <label class="af-field af-col-2">
+                <span class="af-label">Meta description <span class="af-opt">≤ 500</span></span>
+                <textarea formControlName="metaDescription" rows="2"></textarea>
+              </label>
+              <label class="af-field af-col-2">
+                <span class="af-label">Canonical URL <span class="af-opt">optional</span></span>
+                <input type="text" formControlName="canonicalUrl" placeholder="https://…" />
+              </label>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ SIDEBAR ============ -->
+      <aside class="af__side">
+        <section class="af-card af-card--side">
+          <div class="af-card__head"><h2 class="af-card__title">Status</h2></div>
+          <div class="af-card__body">
+            @if (isEdit()) {
+              <span class="af-status" [class]="statusClass()">{{ productStatus() }}</span>
+              <p class="af-hint" style="margin-top:8px">Publish / archive from the products list.</p>
+            } @else {
+              <span class="af-status is-draft">DRAFT</span>
+              <p class="af-hint" style="margin-top:8px">Saved as a draft. Publish it once you're ready.</p>
+            }
+          </div>
+        </section>
+
+        <section class="af-card af-card--side">
+          <div class="af-card__head"><h2 class="af-card__title">Organisation</h2></div>
+          <div class="af-card__body">
+            <div class="af-grid af-grid--1">
+              <label class="af-field">
+                <span class="af-label">Product type <span class="af-opt">optional</span></span>
+                <input type="text" formControlName="productType" placeholder="PHYSICAL" />
+              </label>
+              <label class="af-switch">
+                <span class="af-switch__text">
+                  <strong>Featured</strong>
+                  <span>Highlight in the Shop &amp; on journeys</span>
+                </span>
+                <input type="checkbox" formControlName="featured" />
+                <span class="af-switch__track"></span>
+              </label>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <!-- ============ STICKY ACTION BAR ============ -->
+    <div class="af-bar">
+      <span class="af-bar__hint">{{ isEdit() ? 'Editing ' + (form.controls.name.value || 'product') : 'New product' }}</span>
       <a class="btn-outline" routerLink="/products">Cancel</a>
       <button class="btn-primary" type="submit" [disabled]="saving()">
         {{ saving() ? 'Saving…' : (isEdit() ? 'Save changes' : 'Create product') }}
       </button>
     </div>
   </form>
-
-  @if (isEdit()) {
-    <section class="form-card">
-      <h2 class="section__title">Variants</h2>
-      <p class="muted variants__hint">
-        Optional. Sizes, colours, or bundles of this product — each with its own SKU and price.
-      </p>
-
-      @if (variants().length) {
-        <table class="vtbl">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>SKU</th>
-              <th>Attributes</th>
-              <th>Price override</th>
-              <th class="vtbl__actions"></th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (v of variants(); track v.publicId) {
-              <tr>
-                <td class="vtbl__name">{{ v.variantName }}</td>
-                <td>{{ v.sku }}</td>
-                <td class="vtbl__attrs">{{ v.attributes || '—' }}</td>
-                <td>{{ v.priceOverride != null ? v.priceOverride : '—' }}</td>
-                <td class="vtbl__actions">
-                  <button
-                    class="btn-mini btn-mini--danger"
-                    type="button"
-                    [disabled]="variantActingId() === v.publicId"
-                    (click)="removeVariant(v)"
-                  >
-                    Remove
-                  </button>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      } @else {
-        <p class="muted">No variants yet.</p>
-      }
-
-      <form class="vadd" [formGroup]="variantForm" (ngSubmit)="addVariant()" novalidate>
-        <div class="grid">
-          <label class="field">
-            <span class="field__label">Variant name</span>
-            <input type="text" formControlName="variantName" placeholder="100g pouch" />
-            @if (variantForm.controls.variantName.touched && variantForm.controls.variantName.invalid) {
-              <span class="field__err">Name is required.</span>
-            }
-          </label>
-          <label class="field">
-            <span class="field__label">SKU</span>
-            <input type="text" formControlName="sku" placeholder="WT-HRB-001-100" />
-            @if (variantForm.controls.sku.touched && variantForm.controls.sku.invalid) {
-              <span class="field__err">SKU is required.</span>
-            }
-          </label>
-          <label class="field">
-            <span class="field__label">Attributes <span class="field__opt">(JSON, optional)</span></span>
-            <input type="text" formControlName="attributes" placeholder='{&quot;size&quot;:&quot;100g&quot;}' />
-          </label>
-          <label class="field">
-            <span class="field__label">Price override <span class="field__opt">(optional)</span></span>
-            <input type="number" formControlName="priceOverride" min="0" step="0.01" />
-          </label>
-          <label class="field">
-            <span class="field__label">Weight (g) <span class="field__opt">(optional)</span></span>
-            <input type="number" formControlName="weightGrams" min="0" />
-          </label>
-        </div>
-        <div class="vadd__actions">
-          <button class="btn-outline" type="submit" [disabled]="addingVariant()">
-            {{ addingVariant() ? 'Adding…' : '+ Add variant' }}
-          </button>
-        </div>
-      </form>
-    </section>
-  }
 }

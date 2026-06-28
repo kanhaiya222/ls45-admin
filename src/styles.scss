@@ -84,3 +84,124 @@ a { color: inherit; text-decoration: none; }
   --amber-700: #e0ad5c; /* accent text (brightened) */
   --amber-100: #38301a; /* tint (darkened) */
 }
+
+/* ============================================================
+   Admin form system (.af-*) — professional two-column data entry.
+   Used by product/package/blog/cms forms for a consistent UX.
+   ============================================================ */
+
+/* page header for a form/editor */
+.af-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 6px; }
+.af-head__titles { min-width: 0; }
+.af-head__crumb { font-size: 12.5px; color: var(--teal-700); text-decoration: none; }
+.af-head__crumb:hover { text-decoration: underline; }
+.af-head__title { font-family: var(--font-serif); font-weight: 400; font-size: 26px; color: var(--teal-900); margin-top: 4px; }
+.af-head__sub { margin-top: 4px; font-size: 13.5px; color: var(--gray-500); }
+
+/* top-level alert (save errors) */
+.af-alert {
+  margin: 16px 0; padding: 12px 16px; border-radius: var(--radius-md);
+  background: var(--coral-100); color: var(--coral-600); font-size: 13px;
+  border: 1px solid var(--coral-400, #f3b6ab);
+}
+
+/* shell: main column + sticky sidebar */
+.af { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start; padding-bottom: 96px; }
+.af__main { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.af__side { display: flex; flex-direction: column; gap: 18px; position: sticky; top: 16px; }
+
+/* section card */
+.af-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden; }
+.af-card__head { padding: 16px 22px 0; }
+.af-card__title { font-size: 15px; font-weight: 600; color: var(--gray-900); }
+.af-card__desc { margin-top: 3px; font-size: 12.5px; color: var(--gray-500); }
+.af-card__body { padding: 18px 22px 22px; }
+.af-card--side .af-card__body { padding: 16px 18px 18px; }
+.af-card--side .af-card__head { padding: 14px 18px 0; }
+
+/* field grid */
+.af-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.af-grid--1 { grid-template-columns: 1fr; }
+.af-col-2 { grid-column: 1 / -1; }
+
+/* a field */
+.af-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.af-label { font-size: 13px; font-weight: 600; color: var(--gray-800, var(--gray-900)); display: flex; align-items: center; gap: 5px; }
+.af-req { color: var(--coral-600); }
+.af-opt { font-weight: 400; color: var(--gray-500); font-size: 12px; }
+.af-hint { font-size: 12px; color: var(--gray-500); }
+.af-err { font-size: 12px; color: var(--coral-600); }
+
+.af-field input[type='text'],
+.af-field input[type='number'],
+.af-field input[type='url'],
+.af-field input[type='email'],
+.af-field select,
+.af-field textarea {
+  width: 100%;
+  font-family: var(--font-sans); font-size: 14px; color: var(--gray-900);
+  padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius-md);
+  background: var(--gray-50); transition: border-color .15s, background .15s, box-shadow .15s; resize: vertical;
+}
+.af-field input:focus, .af-field select:focus, .af-field textarea:focus {
+  outline: none; border-color: var(--teal-500); background: var(--white);
+  box-shadow: 0 0 0 3px var(--teal-100);
+}
+.af-field input::placeholder, .af-field textarea::placeholder { color: var(--gray-300, #c9c9c9); }
+
+/* input with a leading unit (e.g. currency) */
+.af-prefixed { display: flex; align-items: stretch; }
+.af-prefixed .af-prefix {
+  display: inline-flex; align-items: center; padding: 0 12px; font-size: 14px; color: var(--gray-700);
+  background: var(--gray-100); border: 1px solid var(--gray-200); border-right: none;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+.af-prefixed input { border-radius: 0 var(--radius-md) var(--radius-md) 0 !important; }
+
+/* toggle switch (featured etc.) */
+.af-switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.af-switch__text { font-size: 13px; }
+.af-switch__text strong { display: block; color: var(--gray-900); font-weight: 600; }
+.af-switch__text span { color: var(--gray-500); font-size: 12px; }
+.af-switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.af-switch__track {
+  flex: 0 0 auto; width: 40px; height: 23px; border-radius: 999px; background: var(--gray-300);
+  position: relative; cursor: pointer; transition: background .15s;
+}
+.af-switch__track::after {
+  content: ''; position: absolute; top: 2px; left: 2px; width: 19px; height: 19px; border-radius: 50%;
+  background: #fff; transition: transform .15s; box-shadow: 0 1px 3px rgba(0,0,0,.25);
+}
+.af-switch input:checked + .af-switch__track { background: var(--teal-700); }
+.af-switch input:checked + .af-switch__track::after { transform: translateX(17px); }
+
+/* status pill in the sidebar */
+.af-status { display: inline-flex; font-size: 11px; font-weight: 700; letter-spacing: .03em; padding: 4px 11px; border-radius: 999px; text-transform: uppercase; }
+.af-status.is-active { background: var(--teal-100); color: var(--teal-800); }
+.af-status.is-draft { background: var(--gray-100); color: var(--gray-700); }
+.af-status.is-archived { background: var(--coral-100); color: var(--coral-600); }
+
+/* tag chips */
+.af-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.af-chip {
+  font-size: 13px; font-weight: 500; color: var(--gray-700); padding: 7px 13px; border-radius: 999px;
+  border: 1px solid var(--gray-200); background: var(--white); cursor: pointer; transition: all .15s;
+}
+.af-chip:hover { border-color: var(--teal-300); }
+.af-chip.is-on { background: var(--teal-100); border-color: var(--teal-300); color: var(--teal-800); }
+
+/* sticky action bar */
+.af-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+  padding: 12px 28px; background: rgba(255,255,255,.92); backdrop-filter: blur(6px);
+  border-top: 1px solid var(--gray-200);
+}
+.af-bar__hint { margin-right: auto; font-size: 12.5px; color: var(--gray-500); }
+
+@media (max-width: 920px) {
+  .af { grid-template-columns: 1fr; }
+  .af__side { position: static; }
+  .af-grid { grid-template-columns: 1fr; }
+  .af-bar { padding-left: 16px; padding-right: 16px; }
+}
