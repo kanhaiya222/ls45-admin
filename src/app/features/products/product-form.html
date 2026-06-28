@@ -84,12 +84,12 @@
           <textarea formControlName="description" rows="5"></textarea>
         </label>
         <label class="field">
-          <span class="field__label">Hero image URL</span>
-          <input type="text" formControlName="heroImageUrl" placeholder="https://…" />
+          <span class="field__label">Hero image</span>
+          <app-image-upload formControlName="heroImageUrl" hint="Large image on the product page" />
         </label>
         <label class="field">
-          <span class="field__label">Thumbnail URL</span>
-          <input type="text" formControlName="thumbnailUrl" placeholder="https://…" />
+          <span class="field__label">Thumbnail</span>
+          <app-image-upload formControlName="thumbnailUrl" hint="Square image for the Shop grid" />
         </label>
       </div>
     </section>

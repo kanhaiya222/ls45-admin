@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ImageUploadComponent } from '../../shared/image-upload/image-upload';
 import { ProductAdminService } from '../../core/product-admin.service';
 import { ToastService } from '../../core/toast.service';
 import { ConfirmService } from '../../core/confirm.service';
@@ -13,7 +14,7 @@ import {
 
 @Component({
   selector: 'app-admin-product-form',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, ImageUploadComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './product-form.html',
   styleUrl: './product-form.scss',

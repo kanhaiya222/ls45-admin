@@ -3,6 +3,7 @@ import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angu
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PackageAdminService } from '../../core/package-admin.service';
 import { ProductAdminService } from '../../core/product-admin.service';
+import { ImageUploadComponent } from '../../shared/image-upload/image-upload';
 import { BrandPricePipe } from '../../core/brand-price.pipe';
 import {
   AddMediaPayload,
@@ -15,7 +16,7 @@ import {
 
 @Component({
   selector: 'app-admin-package-content',
-  imports: [ReactiveFormsModule, FormsModule, RouterLink, BrandPricePipe],
+  imports: [ReactiveFormsModule, FormsModule, RouterLink, BrandPricePipe, ImageUploadComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './package-content.html',
   styleUrl: './package-content.scss',

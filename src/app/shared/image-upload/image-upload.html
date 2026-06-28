@@ -1,0 +1,34 @@
+<div class="imgup">
+  <div class="imgup__preview" [class.is-empty]="!value()">
+    @if (value()) {
+      <img [src]="value()" alt="Selected image preview" />
+    } @else {
+      <span class="imgup__placeholder" aria-hidden="true">🖼</span>
+    }
+  </div>
+
+  <div class="imgup__actions">
+    <label class="btn-outline imgup__browse" [class.is-busy]="uploading()">
+      @if (uploading()) {
+        <span>Uploading…</span>
+      } @else {
+        <span>{{ value() ? 'Replace image' : 'Browse…' }}</span>
+      }
+      <input
+        type="file"
+        accept="image/*"
+        hidden
+        [disabled]="uploading() || disabled()"
+        (change)="onFileSelected($event)"
+      />
+    </label>
+
+    @if (value() && !uploading()) {
+      <button type="button" class="imgup__remove" (click)="remove()">Remove</button>
+    }
+
+    @if (hint()) {
+      <span class="imgup__hint">{{ hint() }}</span>
+    }
+  </div>
+</div>

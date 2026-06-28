@@ -56,7 +56,11 @@
       @if (mediaError()) {
         <div class="add__error" role="alert">{{ mediaError() }}</div>
       }
-      <input type="text" formControlName="url" placeholder="Image / video URL" />
+      @if (mediaForm.controls.mediaType.value === 'VIDEO') {
+        <input type="text" formControlName="url" placeholder="Video URL (e.g. YouTube embed)" />
+      } @else {
+        <app-image-upload formControlName="url" hint="Upload a gallery image" />
+      }
       <input type="text" formControlName="altText" placeholder="Alt text (optional)" />
       <div class="add__row">
         <select formControlName="mediaType">

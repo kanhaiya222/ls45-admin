@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BlogAdminService } from '../../core/blog-admin.service';
+import { ImageUploadComponent } from '../../shared/image-upload/image-upload';
 import { BlogCategory, BlogPostDetail, CreateBlogPostPayload } from '../../core/models';
 
 @Component({
   selector: 'app-admin-blog-form',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, ImageUploadComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './blog-form.html',
   styleUrl: './blog-form.scss',
