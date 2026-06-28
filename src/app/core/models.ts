@@ -426,6 +426,126 @@ export interface ReturnRequest {
   items?: ReturnItem[];
 }
 
+// ── Commerce: shipping + inventory config (Shop setup) ───────────────────────
+
+/** Mirrors ShippingZoneResponse (GET /api/v1/admin/shipping/zones). */
+export interface ShippingZone {
+  publicId: string;
+  name: string;
+  code: string;
+  countryCodes: string[];
+  active: boolean;
+}
+
+/** Body for POST/PUT /admin/shipping/zones. */
+export interface CreateShippingZonePayload {
+  name: string;
+  code: string;
+  countryCodes: string[];
+  active: boolean;
+}
+
+/** Mirrors ShippingMethodResponse. */
+export interface ShippingMethod {
+  publicId: string;
+  name: string;
+  carrier?: string;
+  code: string;
+  active: boolean;
+  sortOrder: number;
+}
+
+/** Body for POST/PUT /admin/shipping/methods. */
+export interface CreateShippingMethodPayload {
+  name: string;
+  carrier?: string;
+  code: string;
+  active: boolean;
+  sortOrder: number;
+}
+
+/** Mirrors ShippingRateResponse. */
+export interface ShippingRate {
+  publicId: string;
+  zonePublicId: string;
+  methodPublicId: string;
+  methodName?: string;
+  minOrderAmount?: number;
+  maxWeightGrams?: number;
+  price?: number;
+  freeOverAmount?: number;
+  active: boolean;
+}
+
+/** Body for POST/PUT /admin/shipping/rates. */
+export interface CreateShippingRatePayload {
+  zonePublicId: string;
+  methodPublicId: string;
+  minOrderAmount?: number;
+  maxWeightGrams?: number;
+  price?: number;
+  freeOverAmount?: number;
+  active: boolean;
+}
+
+/** Mirrors WarehouseResponse (GET /api/v1/admin/warehouses). */
+export interface Warehouse {
+  publicId: string;
+  name: string;
+  code: string;
+  line1?: string;
+  line2?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  active: boolean;
+}
+
+/** Body for POST/PUT /admin/warehouses. */
+export interface CreateWarehousePayload {
+  name: string;
+  code: string;
+  line1?: string;
+  line2?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+}
+
+/** Mirrors StockLevelResponse. */
+export interface StockLevel {
+  publicId: string;
+  warehousePublicId: string;
+  variantPublicId: string;
+  onHandQty: number;
+  reservedQty: number;
+  availableQty: number;
+  reorderLevel: number;
+}
+
+/** Body for POST /admin/stock/adjust. movementType: INBOUND|OUTBOUND|ADJUSTMENT. */
+export interface AdjustStockPayload {
+  warehousePublicId: string;
+  variantPublicId: string;
+  quantityDelta: number;
+  movementType: string;
+  reason?: string;
+  reference?: string;
+}
+
+/** Mirrors StockMovementResponse. */
+export interface StockMovement {
+  publicId: string;
+  movementType: string;
+  quantityDelta: number;
+  balanceAfter: number;
+  reason?: string;
+  reference?: string;
+  createdAt?: string;
+}
+
 /** Mirrors BookingItemResponse. */
 export interface BookingItem {
   publicId: string;

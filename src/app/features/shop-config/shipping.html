@@ -1,0 +1,102 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">Shipping</h1>
+    <p class="page__sub">Zones, methods and per-zone rates — these power checkout shipping quotes.</p>
+  </div>
+</header>
+
+<div class="grid2">
+  <!-- ZONES -->
+  <section class="card">
+    <h2 class="card__title">Zones</h2>
+    @if (zones().length === 0) { <p class="muted">No zones yet.</p> }
+    <ul class="rows">
+      @for (z of zones(); track z.publicId) {
+        <li class="row" [class.is-active]="selectedZoneId() === z.publicId">
+          <button class="row__main" type="button" (click)="selectZone(z.publicId)">
+            <span class="row__name">{{ z.name }}</span>
+            <span class="row__meta">{{ z.code }} · {{ z.countryCodes.join(', ') }}</span>
+          </button>
+          <label class="sw">
+            <input type="checkbox" [checked]="z.active" (change)="toggleZone(z)" />
+            <span>{{ z.active ? 'On' : 'Off' }}</span>
+          </label>
+          <button class="del" type="button" (click)="deleteZone(z)">✕</button>
+        </li>
+      }
+    </ul>
+    <form class="add" [formGroup]="zoneForm" (ngSubmit)="addZone()">
+      <input type="text" formControlName="name" placeholder="Name (e.g. India)" />
+      <input type="text" formControlName="code" placeholder="Code (e.g. IN)" />
+      <input type="text" formControlName="countryCodes" placeholder="Countries CSV (IN, LK)" />
+      <button class="btn-primary" type="submit" [disabled]="busy()">Add zone</button>
+    </form>
+  </section>
+
+  <!-- METHODS -->
+  <section class="card">
+    <h2 class="card__title">Methods</h2>
+    @if (methods().length === 0) { <p class="muted">No methods yet.</p> }
+    <ul class="rows">
+      @for (m of methods(); track m.publicId) {
+        <li class="row">
+          <div class="row__main">
+            <span class="row__name">{{ m.name }}</span>
+            <span class="row__meta">{{ m.code }}@if (m.carrier) { · {{ m.carrier }} }</span>
+          </div>
+          <label class="sw">
+            <input type="checkbox" [checked]="m.active" (change)="toggleMethod(m)" />
+            <span>{{ m.active ? 'On' : 'Off' }}</span>
+          </label>
+          <button class="del" type="button" (click)="deleteMethod(m)">✕</button>
+        </li>
+      }
+    </ul>
+    <form class="add" [formGroup]="methodForm" (ngSubmit)="addMethod()">
+      <input type="text" formControlName="name" placeholder="Name (e.g. Standard)" />
+      <input type="text" formControlName="code" placeholder="Code (e.g. STD)" />
+      <input type="text" formControlName="carrier" placeholder="Carrier (optional)" />
+      <button class="btn-primary" type="submit" [disabled]="busy()">Add method</button>
+    </form>
+  </section>
+</div>
+
+<!-- RATES for the selected zone -->
+<section class="card">
+  <h2 class="card__title">
+    Rates @if (selectedZone(); as z) { <small>· {{ z.name }}</small> }
+  </h2>
+  @if (!selectedZoneId()) {
+    <p class="muted">Select a zone above to manage its rates.</p>
+  } @else {
+    @if (rates().length === 0) { <p class="muted">No rates for this zone yet.</p> }
+    <table class="tbl">
+      <thead>
+        <tr><th>Method</th><th>Min order</th><th>Max weight</th><th>Price</th><th>Free over</th><th></th></tr>
+      </thead>
+      <tbody>
+        @for (r of rates(); track r.publicId) {
+          <tr>
+            <td>{{ r.methodName || methodName(r.methodPublicId) }}</td>
+            <td>{{ r.minOrderAmount | brandPrice }}</td>
+            <td>{{ r.maxWeightGrams != null ? r.maxWeightGrams + ' g' : '—' }}</td>
+            <td>{{ r.price | brandPrice }}</td>
+            <td>{{ r.freeOverAmount != null ? (r.freeOverAmount | brandPrice) : '—' }}</td>
+            <td class="r"><button class="del" type="button" (click)="deleteRate(r)">✕</button></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <form class="add add--rate" [formGroup]="rateForm" (ngSubmit)="addRate()">
+      <select formControlName="methodPublicId">
+        <option value="">Method…</option>
+        @for (m of methods(); track m.publicId) { <option [value]="m.publicId">{{ m.name }}</option> }
+      </select>
+      <input type="number" formControlName="price" placeholder="Price" min="0" step="0.01" />
+      <input type="number" formControlName="minOrderAmount" placeholder="Min order" min="0" />
+      <input type="number" formControlName="maxWeightGrams" placeholder="Max g (opt)" min="0" />
+      <input type="number" formControlName="freeOverAmount" placeholder="Free over (opt)" min="0" />
+      <button class="btn-primary" type="submit" [disabled]="busy()">Add rate</button>
+    </form>
+  }
+</section>
