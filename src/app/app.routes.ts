@@ -66,6 +66,21 @@ export const routes: Routes = [
         title: 'Edit product · LS45 Admin',
       },
       {
+        path: 'orders',
+        loadComponent: () => import('./features/orders/order-list').then((m) => m.OrderListPage),
+        title: 'Orders · LS45 Admin',
+      },
+      {
+        path: 'orders/:id',
+        loadComponent: () => import('./features/orders/order-detail').then((m) => m.OrderDetailPage),
+        title: 'Order · LS45 Admin',
+      },
+      {
+        path: 'returns',
+        loadComponent: () => import('./features/orders/returns').then((m) => m.ReturnsPage),
+        title: 'Returns · LS45 Admin',
+      },
+      {
         path: 'departures/:id/manifest',
         loadComponent: () => import('./features/departures/manifest').then((m) => m.ManifestPage),
         title: 'Manifest · LS45 Admin',

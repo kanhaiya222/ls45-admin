@@ -298,6 +298,134 @@ export interface AddProductVariantPayload {
   active: boolean;
 }
 
+// ── Commerce: orders, fulfillment, returns (Shop operations) ──────────────────
+
+export type OrderStatus =
+  | 'PENDING_PAYMENT' | 'CONFIRMED' | 'FULFILLING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
+export type ShipmentStatus = 'PENDING' | 'PACKED' | 'DISPATCHED' | 'DELIVERED' | 'CANCELLED';
+export type ReturnStatus = 'REQUESTED' | 'APPROVED' | 'REJECTED' | 'RECEIVED' | 'REFUNDED';
+
+/** Mirrors OrderListResponse (GET /api/v1/admin/orders). */
+export interface AdminOrderListItem {
+  publicId: string;
+  orderNumber: string;
+  status: OrderStatus;
+  grandTotal: number;
+  currencyCode?: string;
+  placedAt?: string;
+  itemCount: number;
+}
+
+/** Mirrors OrderItemResponse. */
+export interface AdminOrderItem {
+  publicId: string;
+  name: string;
+  sku: string;
+  unitPrice: number;
+  quantity: number;
+  lineTotal: number;
+}
+
+/** Mirrors OrderStatusHistoryResponse. */
+export interface OrderStatusHistory {
+  fromStatus?: string;
+  toStatus: string;
+  note?: string;
+  createdAt?: string;
+}
+
+/** Mirrors OrderResponse (GET /api/v1/admin/orders/{id}). */
+export interface AdminOrder {
+  publicId: string;
+  orderNumber: string;
+  status: OrderStatus;
+  currencyCode?: string;
+  itemSubtotal: number;
+  shippingTotal: number;
+  taxTotal: number;
+  discountTotal: number;
+  grandTotal: number;
+  shippingMethodName?: string;
+  shipName?: string;
+  shipPhone?: string;
+  shipLine1?: string;
+  shipLine2?: string;
+  shipCity?: string;
+  shipState?: string;
+  shipPostalCode?: string;
+  shipCountry?: string;
+  placedAt?: string;
+  items?: AdminOrderItem[];
+  history?: OrderStatusHistory[];
+}
+
+/** Mirrors ShipmentItemResponse. */
+export interface ShipmentItem {
+  publicId: string;
+  orderItemPublicId: string;
+  name: string;
+  quantity: number;
+}
+
+/** Mirrors ShipmentResponse. */
+export interface Shipment {
+  publicId: string;
+  orderPublicId: string;
+  status: ShipmentStatus;
+  carrier?: string;
+  trackingNumber?: string;
+  fulfillmentLocationPublicId?: string;
+  shippedAt?: string;
+  deliveredAt?: string;
+  items?: ShipmentItem[];
+}
+
+/** Body for POST .../shipments (CreateShipmentRequest). Empty items = ship all remaining. */
+export interface CreateShipmentPayload {
+  fulfillmentLocationPublicId?: string;
+  carrier?: string;
+  trackingNumber?: string;
+  items?: { orderItemPublicId: string; quantity: number }[];
+}
+
+/** Body for PATCH .../shipments/{id}/status (UpdateShipmentStatusRequest). */
+export interface UpdateShipmentStatusPayload {
+  status: ShipmentStatus;
+  trackingNumber?: string;
+  carrier?: string;
+}
+
+/** Mirrors FulfillmentLocationResponse (GET /api/v1/admin/fulfillment/locations). */
+export interface FulfillmentLocation {
+  publicId: string;
+  name: string;
+  code: string;
+  city?: string;
+  country?: string;
+  active: boolean;
+}
+
+/** Mirrors ReturnItemResponse. */
+export interface ReturnItem {
+  publicId: string;
+  orderItemPublicId: string;
+  name: string;
+  quantity: number;
+  restock: boolean;
+}
+
+/** Mirrors ReturnResponse (GET /api/v1/admin/returns). */
+export interface ReturnRequest {
+  publicId: string;
+  orderPublicId: string;
+  status: ReturnStatus;
+  reason?: string;
+  refundAmount?: number;
+  requestedAt?: string;
+  resolvedAt?: string;
+  items?: ReturnItem[];
+}
+
 /** Mirrors BookingItemResponse. */
 export interface BookingItem {
   publicId: string;

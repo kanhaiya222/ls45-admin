@@ -45,7 +45,8 @@ const MOBILE_QUERY = '(max-width: 860px)';
 
 /** Friendly labels for URL segments used in the breadcrumb + page title. */
 const SEGMENT_LABELS: Record<string, string> = {
-  packages: 'Packages', products: 'Products', bookings: 'Bookings', reports: 'Reports', taxonomy: 'Taxonomy',
+  packages: 'Packages', products: 'Products', orders: 'Orders', returns: 'Returns',
+  bookings: 'Bookings', reports: 'Reports', taxonomy: 'Taxonomy',
   content: 'Content', pages: 'Pages', blog: 'Blog', categories: 'Categories',
   departures: 'Departures', manifest: 'Manifest', new: 'New', edit: 'Edit',
   team: 'Team', users: 'Team', roles: 'Roles', customers: 'Customers', 'module-access': 'Module Access',
@@ -54,7 +55,8 @@ const SEGMENT_LABELS: Record<string, string> = {
 
 /** Top-level routes that actually exist — only these breadcrumb segments are clickable. */
 const NAVIGABLE_ROUTES = new Set([
-  '/packages', '/products', '/bookings', '/reports', '/taxonomy', '/content/pages', '/content/blog',
+  '/packages', '/products', '/orders', '/returns', '/bookings', '/reports', '/taxonomy',
+  '/content/pages', '/content/blog',
   '/team/users', '/team/roles', '/team/module-access', '/customers', '/settings',
 ]);
 
@@ -64,6 +66,7 @@ const ICONS: Record<string, string> = {
   packages: 'M12 2l9 5v10l-9 5-9-5V7zm0 2.3L5 8v8l7 3.9L19 16V8z',
   taxonomy: 'M10 2l10 10-8 8L2 10V2zm-3 3.5A1.5 1.5 0 105.5 7 1.5 1.5 0 007 5.5z',
   bookings: 'M7 2v2h10V2h2v2h3v18H2V4h3V2zm13 8H4v10h16zM6 12h5v4H6z',
+  orders: 'M7 4V2h10v2h3l-1 16H5L4 4zm2 0h6V4H9zm-2 4 1 10h8l1-10z',
   pages: 'M6 2h9l5 5v15H6zm8 1.5V8h4.5zM8 12h8v2H8zm0 4h8v2H8z',
   blog: 'M3 17.2V21h3.8L18 9.8 14.2 6zM20.7 7a1 1 0 000-1.4L18.4 3.3a1 1 0 00-1.4 0l-1.8 1.8L19 8.8z',
   reports: 'M4 13h4v8H4zm6-6h4v14h-4zm6 3h4v11h-4z',
@@ -167,6 +170,12 @@ export class ShellComponent {
       ],
     },
     { label: 'Bookings', icon: 'bookings', route: '/bookings', badgeKey: 'bookings', perm: 'booking:read:all' },
+    {
+      label: 'Shop orders', icon: 'orders', children: [
+        { label: 'Orders', route: '/orders', adminOnly: true },
+        { label: 'Returns', route: '/returns', adminOnly: true },
+      ],
+    },
     {
       label: 'Content', icon: 'pages', children: [
         { label: 'Pages', route: '/content/pages', perm: 'content:read:all' },

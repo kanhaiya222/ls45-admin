@@ -1,0 +1,162 @@
+<header class="page__head">
+  <div>
+    <a class="back" routerLink="/orders">← Orders</a>
+    @if (order(); as o) {
+      <h1 class="page__title">{{ o.orderNumber }}</h1>
+      <p class="page__sub">
+        <span class="status" [class]="orderStatusClass(o.status)">{{ statusLabel(o.status) }}</span>
+        · placed {{ o.placedAt | brandDate }}
+      </p>
+    } @else {
+      <h1 class="page__title">Order</h1>
+    }
+  </div>
+</header>
+
+@if (loading()) {
+  <div class="card pad"><p class="muted">Loading order…</p></div>
+} @else if (loadError() || !order()) {
+  <div class="card pad"><p class="muted">Couldn't load this order. <a routerLink="/orders">Back to orders</a>.</p></div>
+} @else if (order(); as o) {
+  <div class="cols">
+    <!-- LEFT: items, totals, fulfillment -->
+    <div class="col">
+      <section class="card">
+        <h2 class="card__title">Items</h2>
+        <table class="tbl">
+          <thead>
+            <tr><th>Product</th><th>SKU</th><th>Qty</th><th>Unit</th><th class="r">Line</th></tr>
+          </thead>
+          <tbody>
+            @for (it of o.items ?? []; track it.publicId) {
+              <tr>
+                <td class="tbl__name">{{ it.name }}</td>
+                <td>{{ it.sku }}</td>
+                <td>{{ it.quantity }}</td>
+                <td>{{ it.unitPrice | brandPrice }}</td>
+                <td class="r">{{ it.lineTotal | brandPrice }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <div class="totals">
+          <div class="trow"><span>Subtotal</span><span>{{ o.itemSubtotal | brandPrice }}</span></div>
+          <div class="trow"><span>Shipping</span><span>{{ o.shippingTotal | brandPrice }}</span></div>
+          <div class="trow"><span>Tax</span><span>{{ o.taxTotal | brandPrice }}</span></div>
+          @if (o.discountTotal) {
+            <div class="trow trow--save"><span>Discount</span><span>−{{ o.discountTotal | brandPrice }}</span></div>
+          }
+          <div class="trow trow--total"><span>Total</span><span>{{ o.grandTotal | brandPrice }}</span></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="card__title">Fulfillment</h2>
+
+        @if (awaitingPayment()) {
+          <p class="muted">This order is awaiting payment. It can be fulfilled once payment is confirmed.</p>
+        }
+
+        @if (shipments().length) {
+          <ul class="ships">
+            @for (s of shipments(); track s.publicId) {
+              <li class="ship">
+                <div class="ship__head">
+                  <span class="status" [class]="orderStatusClass(s.status)">{{ statusLabel(s.status) }}</span>
+                  @if (s.carrier) { <span class="ship__meta">{{ s.carrier }}</span> }
+                  @if (s.trackingNumber) { <span class="ship__track">#{{ s.trackingNumber }}</span> }
+                </div>
+                @if (s.items?.length) {
+                  <div class="ship__items">
+                    @for (si of s.items ?? []; track si.publicId) {
+                      <span class="ship__item">{{ si.name }} × {{ si.quantity }}</span>
+                    }
+                  </div>
+                }
+                <div class="ship__actions">
+                  @for (a of nextActions(s.status); track a.status) {
+                    <button
+                      class="btn-mini"
+                      type="button"
+                      [disabled]="actingShipmentId() === s.publicId"
+                      (click)="setShipmentStatus(s, a.status)"
+                    >{{ a.label }}</button>
+                  }
+                </div>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="muted">No shipments yet.</p>
+        }
+
+        @if (canFulfil()) {
+          <form class="ship-add" [formGroup]="shipForm" (ngSubmit)="createShipment()">
+            <h3 class="ship-add__title">Create shipment <small>(ships all remaining items)</small></h3>
+            <div class="ship-add__grid">
+              <label class="field">
+                <span>From location</span>
+                <select formControlName="fulfillmentLocationPublicId">
+                  <option value="">Default</option>
+                  @for (l of locations(); track l.publicId) {
+                    <option [value]="l.publicId">{{ l.name }}</option>
+                  }
+                </select>
+              </label>
+              <label class="field">
+                <span>Carrier</span>
+                <input type="text" formControlName="carrier" placeholder="e.g. Bluedart" />
+              </label>
+              <label class="field">
+                <span>Tracking #</span>
+                <input type="text" formControlName="trackingNumber" placeholder="optional" />
+              </label>
+            </div>
+            <button class="btn-primary" type="submit" [disabled]="creating()">
+              {{ creating() ? 'Creating…' : 'Create shipment' }}
+            </button>
+          </form>
+        }
+      </section>
+    </div>
+
+    <!-- RIGHT: customer, address, timeline -->
+    <aside class="col col--side">
+      <section class="card">
+        <h2 class="card__title">Ship to</h2>
+        @if (o.shipName) {
+          <p class="addr">
+            <strong>{{ o.shipName }}</strong><br />
+            @if (o.shipPhone) { {{ o.shipPhone }}<br /> }
+            {{ o.shipLine1 }}@if (o.shipLine2) {, {{ o.shipLine2 }}}<br />
+            {{ o.shipCity }}@if (o.shipState) {, {{ o.shipState }}} {{ o.shipPostalCode }}<br />
+            {{ o.shipCountry }}
+          </p>
+          @if (o.shippingMethodName) { <p class="muted">via {{ o.shippingMethodName }}</p> }
+        } @else {
+          <p class="muted">No shipping address.</p>
+        }
+      </section>
+
+      <section class="card">
+        <h2 class="card__title">History</h2>
+        @if (o.history?.length) {
+          <ol class="timeline">
+            @for (h of o.history ?? []; track $index) {
+              <li class="tl">
+                <span class="tl__dot"></span>
+                <div class="tl__body">
+                  <strong>{{ statusLabel(h.toStatus) }}</strong>
+                  @if (h.note) { <span class="tl__note">{{ h.note }}</span> }
+                  <span class="tl__time">{{ h.createdAt | brandDate }}</span>
+                </div>
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="muted">No status changes recorded.</p>
+        }
+      </section>
+    </aside>
+  </div>
+}
