@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Observable, map, tap } from 'rxjs';
+import { Observable, finalize, map, shareReplay, tap, throwError } from 'rxjs';
 import { API_BASE_URL } from '../config';
 import { ApiResponse, AuthResponse, AuthUser, LoginRequest } from '../models';
 
@@ -15,6 +15,9 @@ const USER_KEY = 'ls45admin.user';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
+
+  /** In-flight token refresh, shared so concurrent 401s trigger only one /auth/refresh. */
+  private refresh$: Observable<string> | null = null;
 
   private readonly currentUser = signal<AuthUser | null>(this.readUser());
   readonly user = this.currentUser.asReadonly();
@@ -78,6 +81,37 @@ export class AuthService {
 
   getAccessToken(): string | null {
     return this.read(ACCESS_KEY);
+  }
+
+  /**
+   * Rotates the access token using the stored refresh token, emitting the new access token.
+   * Concurrent callers share one in-flight request; errors (no/expired/revoked refresh token)
+   * propagate so the caller can treat the session as expired.
+   */
+  refreshAccessToken(): Observable<string> {
+    if (this.refresh$) {
+      return this.refresh$;
+    }
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      return throwError(() => new Error('SESSION_EXPIRED'));
+    }
+    this.refresh$ = this.http
+      .post<ApiResponse<AuthResponse>>(`${API_BASE_URL}/auth/refresh`, { refreshToken })
+      .pipe(
+        map((res) => res.data),
+        tap((auth) => this.persist(auth)),
+        map((auth) => auth.accessToken),
+        finalize(() => (this.refresh$ = null)),
+        shareReplay(1),
+      );
+    return this.refresh$;
+  }
+
+  /** Clears the session when it can no longer be refreshed (expired / revoked / logged out elsewhere). */
+  sessionExpired(): void {
+    this.clear();
+    this.currentUser.set(null);
   }
 
   private getRefreshToken(): string | null {
