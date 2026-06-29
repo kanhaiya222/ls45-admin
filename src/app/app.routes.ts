@@ -114,6 +114,11 @@ export const routes: Routes = [
         title: 'Inventory · LS45 Admin',
       },
       {
+        path: 'coupons',
+        loadComponent: () => import('./features/coupons/coupons').then((m) => m.CouponsPage),
+        title: 'Coupons · LS45 Admin',
+      },
+      {
         path: 'departures/:id/manifest',
         loadComponent: () => import('./features/departures/manifest').then((m) => m.ManifestPage),
         title: 'Manifest · LS45 Admin',

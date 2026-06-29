@@ -341,6 +341,52 @@ export interface CreateCollectionPayload {
   canonicalUrl?: string;
 }
 
+// ── Commerce: coupons (campaign-scoped) ──────────────────────────────────────
+
+export type CouponStatus = 'ACTIVE' | 'INACTIVE';
+export type DiscountType = 'PERCENT' | 'FIXED';
+
+/** Mirrors CouponCampaignResponse. */
+export interface CouponCampaign {
+  publicId: string;
+  campaignName: string;
+  startsAt?: string;
+  endsAt?: string;
+  maxTotalUses?: number;
+  maxPerUser: number;
+  status?: string;
+}
+
+/** Body for POST /admin/coupon-campaigns. */
+export interface CreateCampaignPayload {
+  campaignName: string;
+  startsAt: string;
+  endsAt: string;
+  maxTotalUses?: number;
+  maxPerUser: number;
+}
+
+/** Mirrors CouponResponse. */
+export interface AdminCoupon {
+  publicId: string;
+  campaignPublicId?: string;
+  code: string;
+  discountType: string;
+  discountValue: number;
+  maxDiscountAmount?: number;
+  minOrderAmount?: number;
+  status: CouponStatus;
+}
+
+/** Body for POST /admin/coupon-campaigns/{id}/coupons. */
+export interface CreateCouponPayload {
+  code: string;
+  discountType: DiscountType;
+  discountValue: number;
+  maxDiscountAmount?: number;
+  minOrderAmount?: number;
+}
+
 // ── Commerce: product reviews (moderation) ───────────────────────────────────
 
 export type ReviewStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
