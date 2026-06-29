@@ -81,6 +81,11 @@ export const routes: Routes = [
         title: 'Returns · LS45 Admin',
       },
       {
+        path: 'reviews',
+        loadComponent: () => import('./features/reviews/reviews').then((m) => m.ReviewsPage),
+        title: 'Reviews · LS45 Admin',
+      },
+      {
         path: 'shipping',
         loadComponent: () => import('./features/shop-config/shipping').then((m) => m.ShippingPage),
         title: 'Shipping · LS45 Admin',

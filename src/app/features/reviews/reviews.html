@@ -1,0 +1,62 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">Reviews</h1>
+    <p class="page__sub">Moderate customer product reviews. Approved reviews appear on the storefront.</p>
+  </div>
+</header>
+
+<div class="tabs">
+  @for (s of statuses; track s) {
+    <button
+      type="button"
+      class="tab"
+      [class.is-active]="activeStatus() === s"
+      (click)="selectStatus(s)"
+    >
+      {{ s === 'ALL' ? 'All' : label(s) }}
+    </button>
+  }
+</div>
+
+<app-list-state
+  [loading]="loading()"
+  [error]="errored()"
+  [empty]="items().length === 0"
+  errorTitle="Couldn't load reviews"
+  errorText="Please ensure the API is running, then refresh."
+  emptyTitle="Nothing to moderate"
+  emptyText="No reviews match this status."
+>
+  <ul class="rlist">
+    @for (r of items(); track r.publicId) {
+      <li class="rcard">
+        <div class="rcard__main">
+          <div class="rcard__head">
+            <span class="stars" aria-hidden="true">
+              @for (s of stars; track s) {
+                <span class="star" [class.is-on]="filled(r.rating, s)">★</span>
+              }
+            </span>
+            <span class="status" [class]="statusClass(r.status)">{{ label(r.status) }}</span>
+            <span class="rcard__date">{{ r.createdAt | brandDate }}</span>
+          </div>
+          @if (r.title) { <strong class="rcard__title">{{ r.title }}</strong> }
+          @if (r.body) { <p class="rcard__body">{{ r.body }}</p> }
+          <span class="rcard__prod">Product: {{ r.productPublicId }}</span>
+        </div>
+        @if (r.status === 'PENDING') {
+          <div class="rcard__actions">
+            <button class="btn-mini btn-mini--go" type="button" [disabled]="actingId() === r.publicId" (click)="approve(r)">Approve</button>
+            <button class="btn-mini btn-mini--danger" type="button" [disabled]="actingId() === r.publicId" (click)="reject(r)">Reject</button>
+          </div>
+        }
+      </li>
+    }
+  </ul>
+
+  @if (!last()) {
+    <button class="btn-outline rlist__more" type="button" [disabled]="loadingMore()" (click)="loadMore()">
+      {{ loadingMore() ? 'Loading…' : 'Load more' }}
+    </button>
+  }
+</app-list-state>

@@ -298,6 +298,22 @@ export interface AddProductVariantPayload {
   active: boolean;
 }
 
+// ── Commerce: product reviews (moderation) ───────────────────────────────────
+
+export type ReviewStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+/** Mirrors ReviewResponse (GET /api/v1/admin/reviews). */
+export interface AdminReview {
+  publicId: string;
+  productPublicId: string;
+  rating: number;
+  title?: string;
+  body?: string;
+  status: ReviewStatus;
+  createdAt?: string;
+  moderatedAt?: string;
+}
+
 // ── Commerce: orders, fulfillment, returns (Shop operations) ──────────────────
 
 export type OrderStatus =
