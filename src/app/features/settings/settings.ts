@@ -42,16 +42,32 @@ export class SettingsPage implements OnDestroy {
   ];
   readonly currencies = ['INR', 'USD', 'EUR', 'GBP', 'AED', 'SGD', 'AUD'];
   readonly dateFormats = ['d MMM y', 'dd/MM/yyyy', 'MM/dd/yyyy', 'yyyy-MM-dd', 'MMMM d, y'];
-  readonly fonts = [
-    "'DM Serif Display', Georgia, serif",
-    "'DM Sans', system-ui, sans-serif",
-    'Georgia, "Times New Roman", serif',
-    'system-ui, -apple-system, sans-serif',
-    '"Playfair Display", Georgia, serif',
-    'Inter, system-ui, sans-serif',
-    'Poppins, system-ui, sans-serif',
-    'Montserrat, system-ui, sans-serif',
+  readonly fonts: ReadonlyArray<{ value: string; label: string }> = [
+    { value: "'DM Serif Display', Georgia, serif", label: 'DM Serif Display' },
+    { value: "'DM Sans', system-ui, sans-serif", label: 'DM Sans' },
+    { value: 'Georgia, "Times New Roman", serif', label: 'Georgia' },
+    { value: 'system-ui, -apple-system, sans-serif', label: 'System UI' },
+    { value: '"Playfair Display", Georgia, serif', label: 'Playfair Display' },
+    { value: 'Inter, system-ui, sans-serif', label: 'Inter' },
+    { value: 'Poppins, system-ui, sans-serif', label: 'Poppins' },
+    { value: 'Montserrat, system-ui, sans-serif', label: 'Montserrat' },
   ];
+
+  /**
+   * Options for a font <select>. Guarantees the currently-stored stack is always present, so a saved
+   * value that doesn't exactly match a preset (e.g. "Georgia, serif") still shows instead of blanking.
+   */
+  fontOptions(current: string | null | undefined): { value: string; label: string }[] {
+    if (current && !this.fonts.some((f) => f.value === current)) {
+      return [{ value: current, label: this.fontLabel(current) }, ...this.fonts];
+    }
+    return [...this.fonts];
+  }
+
+  private fontLabel(stack: string): string {
+    const first = (stack.split(',')[0] || '').trim().replace(/['"]/g, '');
+    return first === 'system-ui' ? 'System UI' : first || stack;
+  }
 
   readonly form = this.fb.nonNullable.group({
     siteName: ['', [Validators.required, Validators.maxLength(120)]],

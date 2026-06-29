@@ -92,6 +92,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 
 .field__label {
@@ -134,12 +135,14 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0; // allow the column to shrink within its grid track (prevents hex input overflow)
 }
 
 .color__row {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .color__row input[type='color'] {
@@ -154,6 +157,7 @@
 
 .color__hex {
   flex: 1;
+  min-width: 0; // text inputs have an intrinsic min width; let it shrink so it can't overflow the card
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 13px;
   padding: 9px 11px;

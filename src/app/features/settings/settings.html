@@ -74,13 +74,17 @@
           <label class="field">
             <span class="field__label">Heading font</span>
             <select formControlName="headingFont">
-              @for (f of fonts; track f) { <option [value]="f">{{ f }}</option> }
+              @for (f of fontOptions(form.controls.headingFont.value); track f.value) {
+                <option [value]="f.value">{{ f.label }}</option>
+              }
             </select>
           </label>
           <label class="field">
             <span class="field__label">Body font</span>
             <select formControlName="bodyFont">
-              @for (f of fonts; track f) { <option [value]="f">{{ f }}</option> }
+              @for (f of fontOptions(form.controls.bodyFont.value); track f.value) {
+                <option [value]="f.value">{{ f.label }}</option>
+              }
             </select>
           </label>
         </div>
