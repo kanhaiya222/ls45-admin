@@ -86,6 +86,24 @@ export const routes: Routes = [
         title: 'Reviews · LS45 Admin',
       },
       {
+        path: 'collections',
+        loadComponent: () =>
+          import('./features/collections/collection-list').then((m) => m.CollectionListPage),
+        title: 'Collections · LS45 Admin',
+      },
+      {
+        path: 'collections/new',
+        loadComponent: () =>
+          import('./features/collections/collection-form').then((m) => m.CollectionFormPage),
+        title: 'New collection · LS45 Admin',
+      },
+      {
+        path: 'collections/:id/edit',
+        loadComponent: () =>
+          import('./features/collections/collection-form').then((m) => m.CollectionFormPage),
+        title: 'Edit collection · LS45 Admin',
+      },
+      {
         path: 'shipping',
         loadComponent: () => import('./features/shop-config/shipping').then((m) => m.ShippingPage),
         title: 'Shipping · LS45 Admin',

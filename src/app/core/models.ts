@@ -298,6 +298,49 @@ export interface AddProductVariantPayload {
   active: boolean;
 }
 
+// ── Commerce: product collections ────────────────────────────────────────────
+
+export type CollectionStatus = 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
+
+/** Mirrors CollectionListResponse (GET /api/v1/admin/product-collections). */
+export interface AdminCollectionListItem {
+  publicId: string;
+  name: string;
+  slug: string;
+  status: CollectionStatus;
+  sortOrder: number;
+  thumbnailUrl?: string;
+}
+
+/** Mirrors CollectionDetailResponse. products[] reuses ProductListItem shape. */
+export interface AdminCollectionDetail {
+  publicId: string;
+  name: string;
+  slug?: string;
+  description?: string;
+  status?: CollectionStatus;
+  sortOrder: number;
+  heroImageUrl?: string;
+  thumbnailUrl?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  canonicalUrl?: string;
+  products?: ProductListItem[];
+}
+
+/** Body for POST/PUT /admin/product-collections (CreateCollectionRequest). */
+export interface CreateCollectionPayload {
+  name: string;
+  slug?: string;
+  description?: string;
+  sortOrder: number;
+  heroImageUrl?: string;
+  thumbnailUrl?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  canonicalUrl?: string;
+}
+
 // ── Commerce: product reviews (moderation) ───────────────────────────────────
 
 export type ReviewStatus = 'PENDING' | 'APPROVED' | 'REJECTED';

@@ -1,0 +1,135 @@
+<header class="af-head">
+  <div class="af-head__titles">
+    <a class="af-head__crumb" routerLink="/collections">← Collections</a>
+    <h1 class="af-head__title">{{ heading() }}</h1>
+    <p class="af-head__sub">Group products into a curated edit. New collections are saved as a draft — publish from the list.</p>
+  </div>
+</header>
+
+@if (loading()) {
+  <div class="af-card"><div class="af-card__body"><p class="muted">Loading collection…</p></div></div>
+} @else if (loadError()) {
+  <div class="state"><h3>Couldn't load collection</h3><a class="btn-primary" routerLink="/collections">Back</a></div>
+} @else {
+  @if (saveError()) { <div class="af-alert" role="alert">{{ saveError() }}</div> }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="af">
+      <div class="af__main">
+        <section class="af-card">
+          <div class="af-card__head">
+            <h2 class="af-card__title">Collection details</h2>
+            <p class="af-card__desc">Name and copy shown on the collection page.</p>
+          </div>
+          <div class="af-card__body">
+            <div class="af-grid">
+              <label class="af-field af-col-2">
+                <span class="af-label">Name <span class="af-req">*</span></span>
+                <input type="text" formControlName="name" placeholder="e.g. Wellness Teas" />
+                @if (form.controls.name.touched && form.controls.name.invalid) {
+                  <span class="af-err">Name is required.</span>
+                }
+              </label>
+              <label class="af-field">
+                <span class="af-label">URL slug <span class="af-opt">auto if blank</span></span>
+                <input type="text" formControlName="slug" placeholder="wellness-teas" />
+              </label>
+              <label class="af-field">
+                <span class="af-label">Sort order</span>
+                <input type="number" formControlName="sortOrder" min="0" />
+              </label>
+              <label class="af-field af-col-2">
+                <span class="af-label">Description</span>
+                <textarea formControlName="description" rows="3" placeholder="What ties these products together?"></textarea>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="af-card">
+          <div class="af-card__head">
+            <h2 class="af-card__title">Media</h2>
+            <p class="af-card__desc">Upload images — no need to paste URLs.</p>
+          </div>
+          <div class="af-card__body">
+            <div class="af-grid">
+              <label class="af-field">
+                <span class="af-label">Hero image</span>
+                <app-image-upload formControlName="heroImageUrl" hint="Banner on the collection page" />
+              </label>
+              <label class="af-field">
+                <span class="af-label">Thumbnail</span>
+                <app-image-upload formControlName="thumbnailUrl" hint="Tile in the Shop's collection rail" />
+              </label>
+            </div>
+          </div>
+        </section>
+
+        @if (isEdit()) {
+          <section class="af-card">
+            <div class="af-card__head">
+              <h2 class="af-card__title">Products</h2>
+              <p class="af-card__desc">Add active products to this collection.</p>
+            </div>
+            <div class="af-card__body">
+              <div class="picker">
+                <select [value]="selectedProductId()" (change)="selectedProductId.set($any($event.target).value)">
+                  <option value="">Select a product…</option>
+                  @for (p of selectable(); track p.publicId) {
+                    <option [value]="p.publicId">{{ p.name }} ({{ p.sku }})</option>
+                  }
+                </select>
+                <button class="btn-primary" type="button" [disabled]="!selectedProductId() || busyProducts()" (click)="addProduct()">Add</button>
+              </div>
+              @if (members().length === 0) {
+                <p class="muted">No products in this collection yet.</p>
+              } @else {
+                <ul class="members">
+                  @for (p of members(); track p.publicId) {
+                    <li class="member">
+                      <span class="member__name">{{ p.name }}</span>
+                      <span class="member__sku">{{ p.sku }}</span>
+                      <button class="del" type="button" [disabled]="busyProducts()" (click)="removeProduct(p)">Remove</button>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          </section>
+        }
+
+        <section class="af-card">
+          <div class="af-card__head">
+            <h2 class="af-card__title">Search engine listing</h2>
+            <p class="af-card__desc">How this collection appears in Google &amp; on social.</p>
+          </div>
+          <div class="af-card__body">
+            <div class="af-grid">
+              <label class="af-field af-col-2"><span class="af-label">Meta title <span class="af-opt">≤ 255</span></span><input type="text" formControlName="metaTitle" /></label>
+              <label class="af-field af-col-2"><span class="af-label">Meta description <span class="af-opt">≤ 500</span></span><textarea formControlName="metaDescription" rows="2"></textarea></label>
+              <label class="af-field af-col-2"><span class="af-label">Canonical URL <span class="af-opt">optional</span></span><input type="text" formControlName="canonicalUrl" placeholder="https://…" /></label>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="af__side">
+        <section class="af-card af-card--side">
+          <div class="af-card__head"><h2 class="af-card__title">Status</h2></div>
+          <div class="af-card__body">
+            <span class="af-status is-draft">{{ isEdit() ? 'EDITING' : 'DRAFT' }}</span>
+            <p class="af-hint" style="margin-top:8px">Publish / archive from the collections list.</p>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <div class="af-bar">
+      <span class="af-bar__hint">{{ isEdit() ? 'Editing ' + (form.controls.name.value || 'collection') : 'New collection' }}</span>
+      <a class="btn-outline" routerLink="/collections">Cancel</a>
+      <button class="btn-primary" type="submit" [disabled]="saving()">
+        {{ saving() ? 'Saving…' : (isEdit() ? 'Save changes' : 'Create collection') }}
+      </button>
+    </div>
+  </form>
+}

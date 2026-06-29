@@ -1,0 +1,44 @@
+<header class="page__head">
+  <div>
+    <h1 class="page__title">Collections</h1>
+    <p class="page__sub">Group Shop products into curated edits ("Wellness Teas", "Yoga Kit") for the storefront.</p>
+  </div>
+  <a class="btn-primary" routerLink="/collections/new">+ New collection</a>
+</header>
+
+<app-list-state
+  [loading]="loading()"
+  [error]="errored()"
+  [empty]="items().length === 0"
+  errorTitle="Couldn't load collections"
+  errorText="Please ensure the API is running, then refresh."
+  emptyTitle="No collections yet"
+  emptyText="Create your first curated edit to feature on the Shop."
+>
+  <div class="card">
+    <table class="tbl">
+      <thead>
+        <tr><th>Name</th><th>Slug</th><th>Status</th><th class="tbl__actions">Actions</th></tr>
+      </thead>
+      <tbody>
+        @for (c of items(); track c.publicId) {
+          <tr>
+            <td><span class="tbl__name">{{ c.name }}</span></td>
+            <td>{{ c.slug }}</td>
+            <td><span class="status" [class]="statusClass(c.status)">{{ c.status }}</span></td>
+            <td class="tbl__actions">
+              <a class="btn-mini" [routerLink]="['/collections', c.publicId, 'edit']">Edit</a>
+              @if (c.status !== 'ACTIVE') {
+                <button class="btn-mini btn-mini--go" type="button" [disabled]="actingId() === c.publicId" (click)="publish(c)">Publish</button>
+              }
+              @if (c.status === 'ACTIVE') {
+                <button class="btn-mini" type="button" [disabled]="actingId() === c.publicId" (click)="archive(c)">Archive</button>
+              }
+              <button class="btn-mini btn-mini--danger" type="button" [disabled]="actingId() === c.publicId" (click)="remove(c)">Delete</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</app-list-state>
