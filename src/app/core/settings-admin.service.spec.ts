@@ -12,7 +12,7 @@ describe('SettingsAdminService', () => {
   const url = `${API_BASE_URL}/admin/settings`;
 
   const sample: Branding = {
-    siteName: 'LS45', primaryColor: '#0F6E56', accentColor: '#D85A30',
+    siteName: 'TheSalori', primaryColor: '#0F6E56', accentColor: '#D85A30',
     headingFont: 'serif', bodyFont: 'sans', timezone: 'Asia/Kolkata',
     currencyCode: 'INR', dateFormat: 'd MMM y',
   };
@@ -31,7 +31,7 @@ describe('SettingsAdminService', () => {
     const req = http.expectOne(url);
     expect(req.request.method).toBe('GET');
     req.flush({ success: true, data: sample });
-    expect(got?.siteName).toBe('LS45');
+    expect(got?.siteName).toBe('TheSalori');
   });
 
   it('PUTs the updated branding', () => {

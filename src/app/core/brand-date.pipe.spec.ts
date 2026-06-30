@@ -6,7 +6,7 @@ import { BrandingService } from './branding.service';
 import { Branding } from './models';
 
 const BASE: Branding = {
-  siteName: 'LS45',
+  siteName: 'TheSalori',
   primaryColor: '#0F6E56',
   accentColor: '#D85A30',
   headingFont: 'serif',
