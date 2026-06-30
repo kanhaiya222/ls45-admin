@@ -38,3 +38,24 @@
 .btn-mini--danger { border-color: var(--coral-400, #f3b6ab); color: var(--coral-600); }
 .btn-mini--danger:hover { background: var(--coral-100); }
 .btn-mini:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* inline stock editor + status pill */
+.vtbl__qty { white-space: nowrap; }
+.vtbl__qtyin {
+  width: 64px;
+  padding: 5px 7px;
+  border: 1px solid var(--gray-200);
+  border-radius: 6px;
+  margin-right: 6px;
+}
+.stockpill {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #dcfce7;
+  color: #15803d;
+}
+.stockpill--low { background: #fef3c7; color: #b45309; }
+.stockpill--out { background: #fee2e2; color: #b91c1c; }

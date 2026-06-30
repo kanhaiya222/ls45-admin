@@ -232,6 +232,8 @@ export interface ProductVariant {
   weightGrams?: number;
   sortOrder: number;
   active: boolean;
+  /** On-hand sellable units (0 = out of stock). */
+  availableStock?: number;
 }
 
 /** Mirrors ProductMediaResponse. */
@@ -296,6 +298,16 @@ export interface AddProductVariantPayload {
   weightGrams?: number;
   sortOrder: number;
   active: boolean;
+  stockQuantity?: number;
+}
+
+/** Mirrors VariantStockResponse (set/adjust on /admin/inventory). */
+export interface VariantStock {
+  variantPublicId: string;
+  sku: string;
+  variantName: string;
+  stockQuantity: number;
+  stockStatus: string;
 }
 
 // ── Commerce: product collections ────────────────────────────────────────────

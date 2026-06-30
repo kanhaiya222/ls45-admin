@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ImageUploadComponent } from '../../shared/image-upload/image-upload';
 import { ProductAdminService } from '../../core/product-admin.service';
+import { InventoryAdminService } from '../../core/inventory-admin.service';
 import { ToastService } from '../../core/toast.service';
 import { ConfirmService } from '../../core/confirm.service';
 import {
@@ -22,6 +23,7 @@ import {
 export class ProductFormPage {
   private readonly fb = inject(FormBuilder);
   private readonly productsApi = inject(ProductAdminService);
+  private readonly inventoryApi = inject(InventoryAdminService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
@@ -38,6 +40,7 @@ export class ProductFormPage {
   readonly variants = signal<ProductVariant[]>([]);
   readonly addingVariant = signal(false);
   readonly variantActingId = signal<string | null>(null);
+  readonly savingQtyId = signal<string | null>(null);
   readonly productStatus = signal<string>('DRAFT');
 
   readonly heading = computed(() => (this.isEdit() ? 'Edit product' : 'New product'));
@@ -66,6 +69,7 @@ export class ProductFormPage {
     attributes: [''],
     priceOverride: [null as number | null],
     weightGrams: [null as number | null],
+    stockQuantity: [0, [Validators.min(0)]],
   });
 
   constructor() {
@@ -184,6 +188,7 @@ export class ProductFormPage {
       weightGrams: raw.weightGrams != null ? Number(raw.weightGrams) : undefined,
       sortOrder: this.variants().length,
       active: true,
+      stockQuantity: Number(raw.stockQuantity) || 0,
     };
     this.productsApi.addVariant(this.publicId, payload).subscribe({
       next: (v) => {
@@ -194,6 +199,7 @@ export class ProductFormPage {
           attributes: '',
           priceOverride: null,
           weightGrams: null,
+          stockQuantity: 0,
         });
         this.addingVariant.set(false);
         this.toast.success('Variant added');
@@ -203,6 +209,36 @@ export class ProductFormPage {
         this.toast.error(this.messageFrom(err, 'Could not add the variant.'));
       },
     });
+  }
+
+  /** Saves a variant's on-hand quantity via the inventory endpoint and refreshes its badge. */
+  saveVariantQuantity(v: ProductVariant, quantity: number): void {
+    if (this.savingQtyId() || quantity == null || quantity < 0) {
+      return;
+    }
+    this.savingQtyId.set(v.publicId);
+    this.inventoryApi.setQuantity(v.publicId, quantity).subscribe({
+      next: (s) => {
+        this.variants.update((cur) =>
+          cur.map((x) => (x.publicId === v.publicId ? { ...x, availableStock: s.stockQuantity } : x)),
+        );
+        this.savingQtyId.set(null);
+        this.toast.success('Stock updated');
+      },
+      error: (err: unknown) => {
+        this.savingQtyId.set(null);
+        this.toast.error(this.messageFrom(err, 'Could not update stock.'));
+      },
+    });
+  }
+
+  /** In stock / Low stock / Out of stock label from a quantity (mirrors the backend). */
+  stockLabel(qty: number | undefined): string {
+    const n = qty ?? 0;
+    if (n <= 0) {
+      return 'Out of stock';
+    }
+    return n <= 5 ? 'Low stock' : 'In stock';
   }
 
   async removeVariant(v: ProductVariant): Promise<void> {
