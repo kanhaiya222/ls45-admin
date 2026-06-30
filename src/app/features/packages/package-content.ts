@@ -46,10 +46,24 @@ export class PackageContentPage {
   readonly selectedProductId = signal('');
   readonly savingTagged = signal(false);
   readonly taggedError = signal<string | null>(null);
+  /** Searchable-dropdown state for picking a product to tag. */
+  readonly productSearch = signal('');
+  readonly dropdownOpen = signal(false);
   /** Active products not already tagged — the pickable options. */
   readonly selectableProducts = computed(() => {
     const taggedIds = new Set(this.tagged().map((p) => p.publicId));
     return this.availableProducts().filter((p) => !taggedIds.has(p.publicId));
+  });
+  /** Selectable products filtered by the typed search (name or SKU). */
+  readonly filteredProducts = computed(() => {
+    const q = this.productSearch().trim().toLowerCase();
+    const list = this.selectableProducts();
+    if (!q) {
+      return list;
+    }
+    return list.filter(
+      (p) => p.name.toLowerCase().includes(q) || (p.sku ?? '').toLowerCase().includes(q),
+    );
   });
 
   readonly faqForm = this.fb.nonNullable.group({
@@ -85,6 +99,29 @@ export class PackageContentPage {
   }
 
   // ── tagged products ───────────────────────────────────────────────────────────
+  /** A keystroke in the search box re-filters and invalidates any prior pick. */
+  onProductSearch(text: string): void {
+    this.productSearch.set(text);
+    this.selectedProductId.set('');
+    this.dropdownOpen.set(true);
+  }
+
+  /** Choose a product from the dropdown. */
+  pickProduct(p: ProductListItem): void {
+    this.selectedProductId.set(p.publicId);
+    this.productSearch.set(`${p.name} (${p.sku})`);
+    this.dropdownOpen.set(false);
+  }
+
+  openDropdown(): void {
+    this.dropdownOpen.set(true);
+  }
+
+  /** Defer closing so a click on a result registers before the list is hidden. */
+  closeDropdownSoon(): void {
+    setTimeout(() => this.dropdownOpen.set(false), 150);
+  }
+
   addTagged(): void {
     const id = this.selectedProductId();
     if (!id || this.savingTagged() || this.tagged().some((p) => p.publicId === id)) {
@@ -109,6 +146,8 @@ export class PackageContentPage {
       next: (pkg) => {
         this.tagged.set(pkg.taggedProducts ?? []);
         this.selectedProductId.set('');
+        this.productSearch.set('');
+        this.dropdownOpen.set(false);
         this.savingTagged.set(false);
       },
       error: (err: unknown) => {

@@ -116,12 +116,32 @@
   }
 
   <div class="shop__add">
-    <select [ngModel]="selectedProductId()" (ngModelChange)="selectedProductId.set($event)">
-      <option value="">Select a product to tag…</option>
-      @for (p of selectableProducts(); track p.publicId) {
-        <option [value]="p.publicId">{{ p.name }} ({{ p.sku }})</option>
+    <div class="combo">
+      <input
+        type="text"
+        class="combo__input"
+        [ngModel]="productSearch()"
+        (ngModelChange)="onProductSearch($event)"
+        (focus)="openDropdown()"
+        (blur)="closeDropdownSoon()"
+        placeholder="Search a product by name or SKU…"
+        autocomplete="off"
+        role="combobox"
+        [attr.aria-expanded]="dropdownOpen()"
+      />
+      @if (dropdownOpen()) {
+        <ul class="combo__menu" role="listbox">
+          @for (p of filteredProducts(); track p.publicId) {
+            <li class="combo__option" role="option" (mousedown)="pickProduct(p)">
+              <span class="combo__name">{{ p.name }}</span>
+              <span class="combo__sku">{{ p.sku }}</span>
+            </li>
+          } @empty {
+            <li class="combo__empty">No matching products</li>
+          }
+        </ul>
       }
-    </select>
+    </div>
     <button
       class="btn-primary"
       type="button"
